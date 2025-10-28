@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import Logo from '../../public/logo.svg'
 
 export default function Header() {
 
@@ -7,7 +6,7 @@ export default function Header() {
         <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/70 bg-neutral-900/90 border-b border-neutral-800">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <Image src={Logo} alt="Logo Cortezzi" width={146}></Image>
+                    <Image src="/logo.svg" alt="Logo Cortezzi" width={146} height={40} priority />
                 </div>
                 <nav className="hidden md:flex items-center gap-6 text-sm">
                     <a className="opacity-80 hover:opacity-100" href="#portfolio">Portfólio</a>
