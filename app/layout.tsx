@@ -15,6 +15,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Cortezzi Creative",
   description: "Vídeo que dá movimento à sua marca",
+  icons: {
+    icon: "/favicon.png",            // ícone da aba
+    shortcut: "/favicon.png",        // fallback para alguns navegadores
+    apple: "/apple-touch-icon.png",  // ícone quando “Adicionar à tela inicial” no iPhone
+  },
+  // (opcional) já que seu domínio está pronto:
+  // metadataBase: new URL("https://www.cortezzi.com.br"),
 };
 
 export default function RootLayout({
@@ -23,10 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="pt-BR">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
