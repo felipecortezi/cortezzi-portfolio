@@ -1,12 +1,13 @@
 import Image from "next/image";
-import luis from '../../public/luis.webp'
 
 export default function About() {
     return (
         <section id="about" className="bg-neutral-900/40 border-y border-neutral-800">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 grid lg:grid-cols-12 gap-8 items-center">
                 <div className="lg:col-span-6">
-                    <Image src={luis} alt="Luis Felipe Cortezi" className="rounded-2xl bg-neutral-800 border" height={500}></Image>
+                    <div className="relative w-full aspect-square max-w-sm">
+  <Image src="/luis.webp" alt="Luis" fill sizes="(max-width: 640px) 100vw, 400px" className="object-cover rounded-xl" />
+</div>
                 </div>
                 <div className="lg:col-span-6 space-y-4">
                     <h2 className="text-2xl font-semibold">Sobre</h2>
