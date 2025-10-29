@@ -6,9 +6,17 @@ export default function Hero() {
         <div className="h-full w-full bg-gradient-to-b from-neutral-900 to-neutral-950" />
       </div>
 
-      {/* wrapper com mais respiro e altura mínima */}
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 md:py-32 lg:py-40">
-        <div className="grid lg:grid-cols-12 gap-10 items-center min-h-[70vh]">
+      {/* wrapper: menos padding no topo, mais embaixo */}
+      <div
+        className="
+          relative mx-auto max-w-7xl
+          px-4 sm:px-6 lg:px-8
+          pt-12 md:pt-14 lg:pt-16
+          pb-28 md:pb-36 lg:pb-40
+        "
+      >
+        {/* altura mínima um pouco menor pra já aparecer a próxima seção */}
+        <div className="grid lg:grid-cols-12 gap-10 items-center min-h-[60vh]">
           {/* Coluna esquerda */}
           <div className="lg:col-span-6 space-y-6">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
