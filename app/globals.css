@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
-/* Força tema escuro para todos os navegadores (Safari/inputs nativos, etc.) */
+/* Força escuro em controles nativos (Safari etc.) */
 :root {
   color-scheme: dark;
-  --background: #0a0a0a; /* fundo escuro */
-  --foreground: #e5e7eb; /* texto claro (≈ neutral-200) */
+  --background: #0a0a0a;
+  --foreground: #e5e7eb; /* texto claro */
 }
 
 @theme inline {
@@ -14,8 +14,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Removemos o media query. Não vamos mais seguir o OS. */
-/* @media (prefers-color-scheme: dark) { ... } */
+/* Remova o media query de prefers-color-scheme, não precisamos mais seguir o OS */
 
 body {
   background: var(--background);
