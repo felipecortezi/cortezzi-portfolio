@@ -16,15 +16,15 @@ export default function Hero() {
                         </div>
                         <div className="flex items-center gap-6 pt-4 opacity-80 text-sm">
                             <div className="space-y-1">
-                                <div className="font-semibold text-lg">10+</div>
+                                <div className="font-semibold text-lg">+10</div>
                                 <div>Anos</div>
                             </div>
                             <div className="space-y-1">
-                                <div className="font-semibold text-lg">200+</div>
+                                <div className="font-semibold text-lg">+200</div>
                                 <div>Projetos</div>
                             </div>
                             <div className="space-y-1">
-                                <div className="font-semibold text-lg">1M+</div>
+                                <div className="font-semibold text-lg">+10M</div>
                                 <div>Visualizações</div>
                             </div>
                         </div>
