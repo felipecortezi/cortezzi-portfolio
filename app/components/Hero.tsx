@@ -12,7 +12,7 @@ export default function Hero() {
           relative mx-auto max-w-7xl
           px-4 sm:px-6 lg:px-8
           pt-12 md:pt-14 lg:pt-16
-          pb-36 md:pb-40 lg:pb-44
+          pb-28 md:pb-36 lg:pb-40
         "
       >
         {/* altura mínima um pouco menor pra já aparecer a próxima seção */}
