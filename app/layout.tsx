@@ -20,8 +20,7 @@ export const metadata: Metadata = {
     shortcut: "/flavicon.png",
     apple: "/apple-touch-icon.png",
   },
-  // Opcional: define a cor da barra do navegador no mobile
-  // themeColor: "#0a0a0a",
+  // themeColor: "#0a0a0a", // (opcional) barra do navegador no mobile escura
   // metadataBase: new URL("https://www.cortezzi.com.br"),
 };
 
