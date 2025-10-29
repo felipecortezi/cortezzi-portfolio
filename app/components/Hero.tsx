@@ -1,22 +1,22 @@
 export default function Hero() {
   return (
-    // -mb-* puxa a próxima seção pra cima (reduz o respiro inferior real)
-    <section className="relative isolate -mb-8 md:-mb-10 lg:-mb-12">
+    // sem margin negativa, pra não “comer” o topo do vídeo da seção seguinte
+    <section className="relative isolate overflow-visible">
       {/* fundo/gradiente */}
       <div className="absolute inset-0">
         <div className="h-full w-full bg-gradient-to-b from-neutral-900 to-neutral-950" />
       </div>
 
-      {/* wrapper: bem pouco padding no topo e embaixo */}
+      {/* wrapper: pouco padding no topo e base */}
       <div
         className="
           relative mx-auto max-w-7xl
           px-4 sm:px-6 lg:px-8
           pt-6 md:pt-8 lg:pt-10
-          pb-12 md:pb-16 lg:pb-20
+          pb-6 md:pb-8 lg:pb-10
         "
       >
-        {/* altura mínima menor pra já revelar a faixa seguinte */}
+        {/* altura mínima moderada para já sugerir a faixa de baixo sem sobrepor */}
         <div className="grid lg:grid-cols-12 gap-8 items-center min-h-[46vh]">
           {/* Coluna esquerda */}
           <div className="lg:col-span-6 space-y-5">
