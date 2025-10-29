@@ -16,22 +16,25 @@ export const metadata: Metadata = {
   title: "Cortezzi Creative",
   description: "Vídeo que dá movimento à sua marca",
   icons: {
-    icon: "/flavicon.png",            // ícone da aba
-    shortcut: "/flavicon.png",        // fallback para alguns navegadores
-    apple: "/apple-touch-icon.png",  // ícone quando “Adicionar à tela inicial” no iPhone
+    icon: "/flavicon.png",           // <-- certifique-se do nome do arquivo
+    shortcut: "/flavicon.png",
+    apple: "/apple-touch-icon.png",
   },
-  // (opcional) já que seu domínio está pronto:
+  // Opcional: define a cor da barra do navegador no mobile
+  // themeColor: "#0a0a0a",
   // metadataBase: new URL("https://www.cortezzi.com.br"),
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    // Força dark sempre
+    <html lang="pt-BR" className="dark">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased
+                    bg-neutral-950 text-neutral-100`}
+      >
         {children}
       </body>
     </html>
