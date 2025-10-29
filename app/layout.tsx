@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   title: "Cortezzi Creative",
   description: "Vídeo que dá movimento à sua marca",
   icons: {
-    icon: "/favicon.png",            // ícone da aba
-    shortcut: "/favicon.png",        // fallback para alguns navegadores
+    icon: "/flavicon.png",            // ícone da aba
+    shortcut: "/flavicon.png",        // fallback para alguns navegadores
     apple: "/apple-touch-icon.png",  // ícone quando “Adicionar à tela inicial” no iPhone
   },
   // (opcional) já que seu domínio está pronto:
