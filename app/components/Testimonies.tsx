@@ -11,7 +11,8 @@ export default function Testimonies() {
                 </div>
                 <div className="lg:col-span-7 grid sm:grid-cols-2 gap-6">
                     <Testimony name="Douglas Higoshi" role="Programador" company="ME" photo={cat} testimony="Serviço muito rápido e profissional"/>
-            
+                    <Testimony name="Bruna" role="Marketing Interno" company="Fibraw" photo={cat} testimony="Superou as expectativas, o projeto ficou lindo."/>
+                    
                 </div>
             </div>
         </section>
