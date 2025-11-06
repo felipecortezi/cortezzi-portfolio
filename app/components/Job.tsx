@@ -1,19 +1,37 @@
 import Image, { StaticImageData } from "next/image";
 
-export default function Job({ link, title, description, image }: { link: string, title: string, description: string, image: StaticImageData }) {
+type Props = {
+  link: string;
+  title: string;
+  description: string;
+  image: StaticImageData;
+};
 
-    return (
-        <a href={link} target="_blank" className="group">
-            <div className="aspect-video w-full rounded-2xl bg-neutral-800 border border-neutral-700 overflow-hidden flex items-center justify-center">
-                <Image src={image} className="group-hover:opacity-80 transition" alt="Thumbnail do serviço"></Image>
-            </div>
-            <div className="mt-3 flex items-center justify-between">
-                <div>
-                    <h3 className="font-medium">{title}</h3>
-                    <p className="text-sm text-neutral-400">{description}</p>
-                </div>
-                <span className="text-xs opacity-70">+ ver case</span>
-            </div>
-        </a>
-    )
+export default function Job({ link, title, description, image }: Props) {
+  return (
+    <a
+      href={link}
+      target="_blank"
+      rel="noreferrer"
+      className="group block overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40 hover:border-neutral-700 transition-colors"
+    >
+      {/* Área da mídia: mantém o retângulo fixo, só a imagem escala */}
+      <div className="relative aspect-[16/9] overflow-hidden rounded-t-xl bg-neutral-800">
+        <Image
+          src={image}
+          alt={title}
+          className="h-full w-full object-cover
+                     transition-transform duration-500 ease-out will-change-transform
+                     group-hover:scale-[1.06] group-focus-visible:scale-[1.06]"
+          priority={false}
+        />
+      </div>
+
+      {/* Conteúdo */}
+      <div className="p-4">
+        <h3 className="text-base font-medium">{title}</h3>
+        <p className="mt-1 text-sm text-neutral-400">{description}</p>
+      </div>
+    </a>
+  );
 }
