@@ -2,7 +2,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Job from "../components/Job";
 import FeaturedProject from "../components/FeaturedProject";
-import { projects, featuredProject } from "../data/projects";
+import { projects, featuredProject, featuredEmbedUrl } from "../data/projects";
 
 export const metadata = {
   title: "Portfólio • Cortezzi",
@@ -28,6 +28,7 @@ export default function PortfolioPage() {
                 title={featuredProject.title}
                 description={featuredProject.description}
                 image={featuredProject.image}
+                embedUrl={featuredEmbedUrl}
               />
             </div>
 
