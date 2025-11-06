@@ -7,11 +7,11 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
 
-  // comportamento mais "calmo"
-  const MIN_Y_BEFORE_HIDE = 320; // só começa a avaliar hide depois disso
-  const HIDE_AFTER = 240;        // precisa ter andado +240px para baixo desde que apareceu
-  const DOWN_THRESHOLD = 24;     // passo mínimo de descida para esconder
-  const UP_THRESHOLD = 12;       // passo mínimo de subida para mostrar
+  // comportamento "calmo"
+  const MIN_Y_BEFORE_HIDE = 320;
+  const HIDE_AFTER = 240;
+  const DOWN_THRESHOLD = 24;
+  const UP_THRESHOLD = 12;
 
   const lastYRef = useRef(0);
   const lastShowYRef = useRef(0);
@@ -53,17 +53,16 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [visible]);
 
-  // navegação
   const nav = [
     { href: "/portfolio", label: "Portfólio" },
     { href: "/#services", label: "Serviços" },
     { href: "/#contact", label: "Contato" },
   ];
 
-  // classes do container
+  // container um pouco menor
   const base =
-    "pointer-events-auto flex items-center gap-6 sm:gap-8 rounded-[9999px] border border-neutral-800 " +
-    "bg-neutral-900/80 backdrop-blur-md px-7 sm:px-9 md:px-12 py-2.5 sm:py-3 " +
+    "pointer-events-auto flex items-center gap-5 sm:gap-7 rounded-[9999px] border border-neutral-800 " +
+    "bg-neutral-900/80 backdrop-blur-md px-5 sm:px-7 md:px-9 py-2 sm:py-2.5 " +
     "transition-all duration-500 ease-out will-change-transform";
   const elevation = scrolled ? "shadow-xl" : "shadow-lg";
   const visibilityCls = visible
@@ -76,20 +75,20 @@ export default function Header() {
       aria-hidden={!visible}
     >
       <div className={`${base} ${elevation} ${visibilityCls}`}>
-        {/* LOGO com respiro e tamanho controlado */}
+        {/* LOGO um pouco menor e com respiro */}
         <Link href="/" aria-label="Voltar para a home" className="flex items-center pr-2" title="Home">
           <img
             src="/logo.svg"
             alt="Cortezzi"
-            className="h-9 sm:h-11 w-auto opacity-90 hover:opacity-100 transition"
+            className="h-8 sm:h-10 w-auto opacity-90 hover:opacity-100 transition"
           />
         </Link>
 
-        {/* divisor com respiro */}
-        <div className="w-px h-8 bg-neutral-800/70 mx-1 sm:mx-2" />
+        {/* divisor mais discreto */}
+        <div className="w-px h-7 bg-neutral-800/70 mx-2 sm:mx-3" />
 
-        {/* navegação */}
-        <nav className="flex items-center gap-6 sm:gap-10">
+        {/* navegação com gaps menores */}
+        <nav className="flex items-center gap-5 sm:gap-8">
           {nav.map((item) => (
             <Link
               key={item.href}
