@@ -7,27 +7,43 @@ import { useEffect, useRef, useState } from "react";
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
+
+  // parâmetros de comportamento
+  const MIN_Y_BEFORE_HIDE = 120;   // só começa a esconder depois de rolar isso
+  const DOWN_THRESHOLD = 16;       // precisa descer pelo menos 16px para esconder
+  const UP_THRESHOLD = 8;          // precisa subir 8px para mostrar
   const lastYRef = useRef(0);
   const tickingRef = useRef(false);
 
   useEffect(() => {
     const onScroll = () => {
-      if (!tickingRef.current) {
-        window.requestAnimationFrame(() => {
-          const y = window.scrollY || 0;
-          const last = lastYRef.current;
-          const delta = y - last;
+      if (tickingRef.current) return;
+      tickingRef.current = true;
 
-          setScrolled(y > 24);
-          if (y < 10) setVisible(true);
-          else if (delta > 4) setVisible(false);   // descendo
-          else if (delta < -4) setVisible(true);   // subindo
+      window.requestAnimationFrame(() => {
+        const y = window.scrollY || 0;
+        const last = lastYRef.current;
+        const delta = y - last;
 
-          lastYRef.current = y;
-          tickingRef.current = false;
-        });
-        tickingRef.current = true;
-      }
+        // sombra quando sai do topo
+        setScrolled(y > 24);
+
+        // sempre visível no topo
+        if (y < MIN_Y_BEFORE_HIDE) {
+          setVisible(true);
+        } else {
+          if (delta > DOWN_THRESHOLD) {
+            // rolando pra baixo e passou do limite
+            setVisible(false);
+          } else if (delta < -UP_THRESHOLD) {
+            // rolando pra cima
+            setVisible(true);
+          }
+        }
+
+        lastYRef.current = y;
+        tickingRef.current = false;
+      });
     };
 
     lastYRef.current = window.scrollY || 0;
@@ -43,9 +59,9 @@ export default function Header() {
     { href: "/#contact", label: "Contato" },
   ];
 
-  // >>> classes estáveis (sem quebra de linha dentro das aspas) <<<
+  // classes estáveis
   const base =
-    "pointer-events-auto flex items-center gap-3 sm:gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/80 backdrop-blur px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-300 ease-out will-change-transform";
+    "pointer-events-auto flex items-center gap-3 sm:gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/80 backdrop-blur px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-400 ease-out will-change-transform";
   const elevation = scrolled ? "shadow-xl" : "shadow-lg";
   const visibility = visible
     ? "translate-y-0 opacity-100"
@@ -57,19 +73,19 @@ export default function Header() {
       aria-hidden={!visible}
     >
       <div className={`${base} ${elevation} ${visibility}`}>
-        {/* LOGO (volta pra home) */}
+        {/* LOGO (voltar pra home) — tamanho maior forçado */}
         <Link href="/" aria-label="Voltar para a home" className="flex items-center" title="Home">
           <Image
             src="/logo.svg"
             alt="Cortezzi"
-            width={36}
-            height={36}
-            className="w-8 h-8 sm:w-9 sm:h-9 opacity-90 hover:opacity-100 transition"
+            width={56}
+            height={56}
+            className="w-12 h-12 sm:w-14 sm:h-14 opacity-90 hover:opacity-100 transition"
             priority
           />
         </Link>
 
-        <div className="w-px h-5 bg-neutral-800/70 mx-1 sm:mx-2" />
+        <div className="w-px h-6 bg-neutral-800/70 mx-2" />
 
         <nav className="flex items-center gap-1 sm:gap-2">
           {nav.map((item) => (
