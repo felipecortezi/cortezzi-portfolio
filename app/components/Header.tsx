@@ -1,18 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
 
-  // parâmetros de comportamento
-  const MIN_Y_BEFORE_HIDE = 120;   // só começa a esconder depois de rolar isso
-  const DOWN_THRESHOLD = 16;       // precisa descer pelo menos 16px para esconder
-  const UP_THRESHOLD = 8;          // precisa subir 8px para mostrar
+  // comportamento mais "calmo"
+  const MIN_Y_BEFORE_HIDE = 240; // só começa a avaliar hide depois disso
+  const HIDE_AFTER = 180;        // precisa ter andado +180px para baixo desde que apareceu
+  const DOWN_THRESHOLD = 24;     // passo mínimo de descida para considerar "descendo"
+  const UP_THRESHOLD = 12;       // passo mínimo de subida para mostrar
   const lastYRef = useRef(0);
+  const lastShowYRef = useRef(0); // posição Y quando o header foi mostrado por último
   const tickingRef = useRef(false);
 
   useEffect(() => {
@@ -28,16 +29,19 @@ export default function Header() {
         // sombra quando sai do topo
         setScrolled(y > 24);
 
-        // sempre visível no topo
+        // sempre visível antes do limite mínimo
         if (y < MIN_Y_BEFORE_HIDE) {
-          setVisible(true);
+          if (!visible) setVisible(true);
+          lastShowYRef.current = y;
         } else {
-          if (delta > DOWN_THRESHOLD) {
-            // rolando pra baixo e passou do limite
-            setVisible(false);
-          } else if (delta < -UP_THRESHOLD) {
-            // rolando pra cima
-            setVisible(true);
+          // esconder: só se estiver descendo com passo bom e já percorreu HIDE_AFTER desde a última vez que mostrou
+          if (delta > DOWN_THRESHOLD && y - lastShowYRef.current > HIDE_AFTER) {
+            if (visible) setVisible(false);
+          }
+          // mostrar: ao subir um pouco
+          else if (delta < -UP_THRESHOLD) {
+            if (!visible) setVisible(true);
+            lastShowYRef.current = y; // reseta o marco quando mostramos de novo
           }
         }
 
@@ -47,21 +51,18 @@ export default function Header() {
     };
 
     lastYRef.current = window.scrollY || 0;
+    lastShowYRef.current = lastYRef.current;
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [visible]);
 
-  const nav = [
-    { href: "/#portfolio", label: "Portfólio" },
-    { href: "/portfolio", label: "Todos os cases" },
-    { href: "/#services", label: "Serviços" },
-    { href: "/#contact", label: "Contato" },
-  ];
+  // só 1 item: Portfólio -> /portfolio
+  const nav = [{ href: "/portfolio", label: "Portfólio" }];
 
   // classes estáveis
   const base =
-    "pointer-events-auto flex items-center gap-3 sm:gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/80 backdrop-blur px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-400 ease-out will-change-transform";
+    "pointer-events-auto flex items-center gap-3 sm:gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/80 backdrop-blur px-3 py-2 sm:px-4 sm:py-2.5 transition-all duration-500 ease-out will-change-transform";
   const elevation = scrolled ? "shadow-xl" : "shadow-lg";
   const visibility = visible
     ? "translate-y-0 opacity-100"
@@ -73,15 +74,13 @@ export default function Header() {
       aria-hidden={!visible}
     >
       <div className={`${base} ${elevation} ${visibility}`}>
-        {/* LOGO (voltar pra home) — tamanho maior forçado */}
+        {/* LOGO grande (forçado) e link pra home */}
         <Link href="/" aria-label="Voltar para a home" className="flex items-center" title="Home">
-          <Image
+          {/* <img> para forçar escala do SVG */}
+          <img
             src="/logo.svg"
             alt="Cortezzi"
-            width={56}
-            height={56}
-            className="w-12 h-12 sm:w-14 sm:h-14 opacity-90 hover:opacity-100 transition"
-            priority
+            className="h-[40px] sm:h-[52px] w-auto scale-[1.6] origin-left opacity-90 hover:opacity-100 transition"
           />
         </Link>
 
