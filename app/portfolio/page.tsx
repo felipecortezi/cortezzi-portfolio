@@ -1,7 +1,8 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Job from "../components/Job";
-import { projects } from "../data/projects";
+import FeaturedProject from "../components/FeaturedProject";
+import { projects, featuredProject } from "../data/projects";
 
 export const metadata = {
   title: "Portfólio • Cortezzi",
@@ -20,6 +21,17 @@ export default function PortfolioPage() {
               <p className="text-neutral-300 mt-1">Seleção de cases recentes em captação, edição e motion.</p>
             </div>
 
+            {/* PROJETO EM DESTAQUE */}
+            <div className="mb-10">
+              <FeaturedProject
+                link={featuredProject.link}
+                title={featuredProject.title}
+                description={featuredProject.description}
+                image={featuredProject.image}
+              />
+            </div>
+
+            {/* GRID COM TODOS OS PROJETOS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((p, i) => (
                 <Job key={i} link={p.link} title={p.title} description={p.description} image={p.image} />
