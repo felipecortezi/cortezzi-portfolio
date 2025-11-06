@@ -5,7 +5,7 @@ type Props = {
   title: string;
   description: string;
   image: StaticImageData;
-  embedUrl?: string; // ex.: "https://www.youtube.com/embed/ID?rel=0&modestbranding=1"
+  embedUrl?: string; // ex.: https://www.youtube.com/embed/ID?rel=0&modestbranding=1
 };
 
 export default function FeaturedProject({ link, title, description, image, embedUrl }: Props) {
