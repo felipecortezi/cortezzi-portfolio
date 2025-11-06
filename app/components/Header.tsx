@@ -20,13 +20,9 @@ export default function Header() {
 
           setScrolled(y > 24);
 
-          if (y < 10) {
-            setVisible(true);
-          } else if (delta > 4) {
-            setVisible(false);
-          } else if (delta < -4) {
-            setVisible(true);
-          }
+          if (y < 10) setVisible(true);
+          else if (delta > 4) setVisible(false);      // descendo
+          else if (delta < -4) setVisible(true);      // subindo
 
           lastYRef.current = y;
           tickingRef.current = false;
@@ -54,16 +50,14 @@ export default function Header() {
       aria-hidden={!visible}
     >
       <div
-        className={[
-          "pointer-events-auto flex items-center gap-3 sm:gap-4",
-          "rounded-2xl border border-neutral-800 bg-neutral-900/80 backdrop-blur",
-          "px-3 py-2 sm:px-4 sm:py-2.5", // <-- estava quebrado aqui
-          visible ? "translate-y-0 opacity-100" : "translate-y-[140%] opacity-0 pointer-events-none",
-          "transition-all duration-300 ease-out will-change-transform",
-          scrolled ? "shadow-xl" : "shadow-lg",
-        ].join(" ")}
+        className={`pointer-events-auto flex items-center gap-3 sm:gap-4
+          rounded-2xl border border-neutral-800 bg-neutral-900/80 backdrop-blur
+          px-3 py-2 sm:px-4 sm:py-2.5
+          ${visible ? "translate-y-0 opacity-100" : "translate-y-[140%] opacity-0 pointer-events-none"}
+          transition-all duration-300 ease-out will-change-transform
+          ${scrolled ? "shadow-xl" : "shadow-lg"}`}
       >
-        {/* LOGO (voltar pra home) */}
+        {/* LOGO (volta pra home) */}
         <Link href="/" aria-label="Voltar para a home" className="flex items-center" title="Home">
           <Image
             src="/logo.svg"
