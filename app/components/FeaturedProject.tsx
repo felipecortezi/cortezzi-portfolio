@@ -1,17 +1,18 @@
 import Image, { StaticImageData } from "next/image";
 
+type Img = StaticImageData | string;
+
 type Props = {
   link: string;
   title: string;
   description: string;
-  image: StaticImageData;
-  embedUrl?: string; // ex.: https://www.youtube.com/embed/ID?rel=0&modestbranding=1
+  image: Img;
+  embedUrl?: string;
 };
 
 export default function FeaturedProject({ link, title, description, image, embedUrl }: Props) {
   return (
     <section className="relative isolate overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-900/50">
-      {/* Mídia */}
       <div className="aspect-video w-full overflow-hidden rounded-t-3xl bg-neutral-800">
         {embedUrl ? (
           <iframe
@@ -22,18 +23,19 @@ export default function FeaturedProject({ link, title, description, image, embed
             allowFullScreen
           />
         ) : (
-          <a href={link} target="_blank" className="group block h-full w-full">
+          <div className="relative w-full h-full">
             <Image
-              src={image}
+              src={image as any}
               alt={title}
-              className="h-full w-full object-cover group-hover:opacity-90 transition"
+              fill
+              className="object-cover"
+              sizes="100vw"
               priority
             />
-          </a>
+          </div>
         )}
       </div>
 
-      {/* Infos */}
       <div className="p-6 sm:p-8 flex items-start justify-between gap-6">
         <div>
           <h2 className="text-2xl sm:text-3xl font-semibold leading-tight">{title}</h2>
