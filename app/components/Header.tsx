@@ -53,13 +53,14 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [visible]);
 
+  // navegação (Portfólio -> /portfolio)
   const nav = [
     { href: "/portfolio", label: "Portfólio" },
     { href: "/#services", label: "Serviços" },
     { href: "/#contact", label: "Contato" },
   ];
 
-  // container um pouco menor
+  // container mantém o mesmo tamanho do box atual
   const base =
     "pointer-events-auto flex items-center gap-5 sm:gap-7 rounded-[9999px] border border-neutral-800 " +
     "bg-neutral-900/80 backdrop-blur-md px-5 sm:px-7 md:px-9 py-2 sm:py-2.5 " +
@@ -71,23 +72,24 @@ export default function Header() {
 
   return (
     <div
-      className="fixed left-1/2 -translate-x-1/2 z-50 bottom-[max(1rem,env(safe-area-inset-bottom))] pointer-events-none"
+      // ↑ sobe o header (ajuste fino se quiser: aumente/diminua esses valores)
+      className="fixed left-1/2 -translate-x-1/2 z-50 bottom-[6rem] sm:bottom-[7.5rem] md:bottom-[9rem] pointer-events-none"
       aria-hidden={!visible}
     >
       <div className={`${base} ${elevation} ${visibilityCls}`}>
-        {/* LOGO um pouco menor e com respiro */}
+        {/* LOGO menor (mantém o box do header) */}
         <Link href="/" aria-label="Voltar para a home" className="flex items-center pr-2" title="Home">
           <img
             src="/logo.svg"
             alt="Cortezzi"
-            className="h-5 sm:h-7 w-auto opacity-90 hover:opacity-100 transition"
+            className="h-6 sm:h-7 md:h-8 w-auto opacity-90 hover:opacity-100 transition"
           />
         </Link>
 
-        {/* divisor mais discreto */}
+        {/* divisor */}
         <div className="w-px h-7 bg-neutral-800/70 mx-2 sm:mx-3" />
 
-        {/* navegação com gaps menores */}
+        {/* navegação */}
         <nav className="flex items-center gap-5 sm:gap-8">
           {nav.map((item) => (
             <Link
