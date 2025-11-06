@@ -53,17 +53,18 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [visible]);
 
-  // navegação (sem "Todos os cases"); Portfólio -> /portfolio
+  // navegação
   const nav = [
     { href: "/portfolio", label: "Portfólio" },
     { href: "/#services", label: "Serviços" },
     { href: "/#contact", label: "Contato" },
   ];
 
-  // classes
+  // classes do container
   const base =
-    "pointer-events-auto flex items-center gap-4 sm:gap-6 rounded-[999px] border border-neutral-800 " +
-    "bg-neutral-900/80 backdrop-blur-md px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 transition-all duration-500 ease-out will-change-transform";
+    "pointer-events-auto flex items-center gap-6 sm:gap-8 rounded-[9999px] border border-neutral-800 " +
+    "bg-neutral-900/80 backdrop-blur-md px-7 sm:px-9 md:px-12 py-2.5 sm:py-3 " +
+    "transition-all duration-500 ease-out will-change-transform";
   const elevation = scrolled ? "shadow-xl" : "shadow-lg";
   const visibilityCls = visible
     ? "translate-y-0 opacity-100"
@@ -75,21 +76,20 @@ export default function Header() {
       aria-hidden={!visible}
     >
       <div className={`${base} ${elevation} ${visibilityCls}`}>
-        {/* LOGO maior com respiro + link pra home */}
-        <Link href="/" aria-label="Voltar para a home" className="flex items-center" title="Home">
-          {/* <img> para forçar escala do SVG mesmo com viewBox folgado */}
+        {/* LOGO com respiro e tamanho controlado */}
+        <Link href="/" aria-label="Voltar para a home" className="flex items-center pr-2" title="Home">
           <img
             src="/logo.svg"
             alt="Cortezzi"
-            className="h-[54px] sm:h-[64px] w-auto scale-[1.35] origin-left opacity-90 hover:opacity-100 transition"
+            className="h-9 sm:h-11 w-auto opacity-90 hover:opacity-100 transition"
           />
         </Link>
 
-        {/* divisor com mais respiro */}
-        <div className="w-px h-8 bg-neutral-800/70 mx-4 sm:mx-5" />
+        {/* divisor com respiro */}
+        <div className="w-px h-8 bg-neutral-800/70 mx-1 sm:mx-2" />
 
         {/* navegação */}
-        <nav className="flex items-center gap-4 sm:gap-8">
+        <nav className="flex items-center gap-6 sm:gap-10">
           {nav.map((item) => (
             <Link
               key={item.href}
