@@ -53,14 +53,22 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [visible]);
 
-  // navegação (Portfólio -> /portfolio)
+  // helper pra âncoras com smooth scroll (/#services, /#contact)
+  const smoothHash = (e: React.MouseEvent, id: string) => {
+    // se estiver na home, impede navegação e faz scroll suave
+    if (window.location.pathname === "/") {
+      e.preventDefault();
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   const nav = [
-    { href: "/portfolio", label: "Portfólio" },
-    { href: "/#services", label: "Serviços" },
-    { href: "/#contact", label: "Contato" },
+    { href: "/portfolio", label: "Portfólio", type: "link" as const },
+    { href: "/#services", label: "Serviços", type: "hash" as const, id: "services" },
+    { href: "/#contact", label: "Contato", type: "hash" as const, id: "contact" },
   ];
 
-  // container mantém o mesmo tamanho do box atual
   const base =
     "pointer-events-auto flex items-center gap-5 sm:gap-7 rounded-[9999px] border border-neutral-800 " +
     "bg-neutral-900/80 backdrop-blur-md px-5 sm:px-7 md:px-9 py-2 sm:py-2.5 " +
@@ -72,34 +80,43 @@ export default function Header() {
 
   return (
     <div
-      // ↑ sobe o header (ajuste fino se quiser: aumente/diminua esses valores)
-      className="fixed left-1/2 -translate-x-1/2 z-50 bottom-[6rem] sm:bottom-[7.5rem] md:bottom-[9rem] pointer-events-none"
+      // ↓ baixei um pouco o header
+      className="fixed left-1/2 -translate-x-1/2 z-50 bottom-[4.25rem] sm:bottom-[5.25rem] md:bottom-[6rem] pointer-events-none"
       aria-hidden={!visible}
     >
       <div className={`${base} ${elevation} ${visibilityCls}`}>
-        {/* LOGO menor (mantém o box do header) */}
+        {/* LOGO menor, visível no mobile */}
         <Link href="/" aria-label="Voltar para a home" className="flex items-center pr-2" title="Home">
           <img
             src="/logo.svg"
             alt="Cortezzi"
-            className="h-6 sm:h-7 md:h-8 w-auto opacity-90 hover:opacity-100 transition"
+            className="block h-6 sm:h-7 md:h-8 w-auto opacity-90 hover:opacity-100 transition"
           />
         </Link>
 
-        {/* divisor */}
         <div className="w-px h-7 bg-neutral-800/70 mx-2 sm:mx-3" />
 
-        {/* navegação */}
         <nav className="flex items-center gap-5 sm:gap-8">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="px-3 py-1.5 text-sm rounded-full hover:bg-neutral-800/80 text-neutral-200 transition"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {nav.map((item) =>
+            item.type === "hash" ? (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={(e) => smoothHash(e, item.id!)}
+                className="px-3 py-1.5 text-sm rounded-full hover:bg-neutral-800/80 text-neutral-200 transition"
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="px-3 py-1.5 text-sm rounded-full hover:bg-neutral-800/80 text-neutral-200 transition"
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
       </div>
     </div>
