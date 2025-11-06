@@ -80,7 +80,7 @@ export default function Header() {
           <img
             src="/logo.svg"
             alt="Cortezzi"
-            className="h-8 sm:h-10 w-auto opacity-90 hover:opacity-100 transition"
+            className="h-5 sm:h-7 w-auto opacity-90 hover:opacity-100 transition"
           />
         </Link>
 
