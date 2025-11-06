@@ -33,6 +33,11 @@ export default function PortfolioPage() {
               <Job link="https://youtu.be/o37egYio23M" title="Renan Mazer – Videoclipe" description="Renan Mazer • 2025 • Captação & Edição" image={renanMazer} />
               <Job link="https://youtu.be/9xWoFBFOPAE" title="NovoKids – Aftermovie" description="Igreja Missionária • 2025 • Captação & Edição" image={novokids} />
               <Job link="https://youtu.be/uKjzFb4R8qI" title="Artis Studio – Reel Motion" description="Artis Studio • 2025 • Motion Design" image={artis} />
+              <Job link="https://youtu.be/uKjzFb4R8qI" title="Artis Studio – Reel Motion" description="Artis Studio • 2025 • Motion Design" image={artis} />
+              <Job link="https://youtu.be/uKjzFb4R8qI" title="Artis Studio – Reel Motion" description="Artis Studio • 2025 • Motion Design" image={artis} />
+              <Job link="https://youtu.be/uKjzFb4R8qI" title="Artis Studio – Reel Motion" description="Artis Studio • 2025 • Motion Design" image={artis} />
+              <Job link="https://youtu.be/uKjzFb4R8qI" title="Artis Studio – Reel Motion" description="Artis Studio • 2025 • Motion Design" image={artis} />
+              <Job link="https://youtu.be/uKjzFb4R8qI" title="Artis Studio – Reel Motion" description="Artis Studio • 2025 • Motion Design" image={artis} />
             </div>
           </div>
         </section>
