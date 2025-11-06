@@ -22,39 +22,40 @@ export default function Header() {
   ];
 
   return (
-    <div className="fixed left-1/2 -translate-x-1/2 z-50
-                    bottom-[max(1rem,env(safe-area-inset-bottom))]
-                    pointer-events-none">
+    <div
+      className="fixed left-1/2 -translate-x-1/2 z-50
+                 bottom-[max(1rem,env(safe-area-inset-bottom))]
+                 pointer-events-none"
+    >
       <div
         className={[
           "pointer-events-auto flex items-center gap-3 sm:gap-4",
           "rounded-2xl border border-neutral-800 bg-neutral-900/80",
           "backdrop-blur px-3 py-2 sm:px-4 sm:py-2.5",
-          "shadow-lg transition-shadow",
           scrolled ? "shadow-xl" : "shadow-lg",
         ].join(" ")}
       >
-        {/* Logo → volta pra home */}
+        {/* LOGO (volta pra home) — sem texto, logo grandinha */}
         <Link
           href="/"
           aria-label="Voltar para a home"
-          className="flex items-center gap-2 group"
+          className="flex items-center"
+          title="Home"
         >
           <Image
             src="/logo.svg"
             alt="Cortezzi"
-            width={22}
-            height={22}
-            className="opacity-90 group-hover:opacity-100"
+            width={36}
+            height={36}
+            className="w-8 h-8 sm:w-9 sm:h-9 opacity-90 hover:opacity-100 transition"
             priority
           />
-          <span className="text-sm font-medium hidden sm:block">Cortezzi</span>
         </Link>
 
         {/* divisor */}
         <div className="w-px h-5 bg-neutral-800/70 mx-1 sm:mx-2" />
 
-        {/* Navegação compacta */}
+        {/* navegação compacta */}
         <nav className="flex items-center gap-1 sm:gap-2">
           {nav.map((item) => (
             <Link
