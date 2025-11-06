@@ -14,13 +14,17 @@ export type Project = {
 
 import type { StaticImageData } from "next/image";
 
-// --- PROJETO EM DESTAQUE ---
+// --- PROJETO EM DESTAQUE (NovoKids) ---
 export const featuredProject: Project = {
   link: "https://youtu.be/9xWoFBFOPAE",
   title: "Destaque — NovoKids Aftermovie",
   description: "Igreja Missionária • 2025 • Captação & Edição",
   image: novokids,
 };
+
+// URL de embed do YouTube (toca dentro do site)
+export const featuredEmbedUrl =
+  "https://www.youtube.com/embed/9xWoFBFOPAE?rel=0&modestbranding=1&controls=1";
 
 export const projects: Project[] = [
   {
