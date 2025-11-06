@@ -1,11 +1,13 @@
 import Job from "./Job";
-import { projects } from "../data/projects";
+import { client } from "../../lib/sanity.client";
+import { sixLatestProjectsQuery } from "../../lib/sanity.queries";
 
-export default function Grid() {
+export default async function Grid() {
+  const projects = await client.fetch(sixLatestProjectsQuery);
+
   return (
     <section id="portfolio" className="bg-neutral-900/40 border-y border-neutral-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        {/* Título + subtítulo (sem botão aqui) */}
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold">Portfólio</h2>
@@ -13,20 +15,18 @@ export default function Grid() {
           </div>
         </div>
 
-        {/* Grid com 6 projetos */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.slice(0, 6).map((p, i) => (
+          {projects.map((p: any) => (
             <Job
-              key={i}
-              link={p.link}
+              key={p._id}
+              link={p.link || "#"}
               title={p.title}
-              description={p.description}
-              image={p.image}
+              description={p.description || ""}
+              image={p.thumbUrl}
             />
           ))}
         </div>
 
-        {/* Botão centralizado abaixo do grid */}
         <div className="mt-10 flex justify-center">
           <a
             href="/portfolio"
@@ -39,3 +39,5 @@ export default function Grid() {
     </section>
   );
 }
+
+export const revalidate = 60;
