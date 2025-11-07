@@ -55,15 +55,19 @@ export const projectBySlugQuery = `
   _id,
   title,
   "slug": slug.current,
-  description,
-  details,
   client,
   date,
-  link,
-  embedUrl,
+  description,
+  detail,
   "thumbUrl": thumb.asset->url,
-  "coverUrl": cover.asset->url,
-  "gallery": gallery[]{ "url": asset->url },
-  videos[]{ title, link, embedUrl, aspect }
+  "bannerUrl": banner.asset->url,
+  "galleryUrls": gallery[].asset->url,
+  videos[]{
+    url,
+    embedUrl,
+    orientation
+  },
+  link,
+  embedUrl
 }
 `;
