@@ -3,18 +3,16 @@ import Footer from "../../components/Footer";
 import ProjectHero from "./ProjectHero";
 import PT from "./PT";
 import Gallery from "./Gallery";
-import Videos from "./Videos";
 import { client } from "../../../lib/sanity.client";
 import { projectBySlugQuery } from "../../../lib/sanity.queries";
 
+type RouteParams = { params: Promise<{ slug: string }> };
+
 export const revalidate = 60;
 
-export default async function ProjectPage({ params }: any) {
-  // Normaliza: pode vir como objeto OU como Promise
-  const resolvedParams = params && typeof params.then === "function" ? await params : params;
-  const slug: string | undefined = resolvedParams?.slug;
-
-  const project = slug ? await client.fetch(projectBySlugQuery, { slug }) : null;
+export default async function ProjectPage({ params }: RouteParams) {
+  const { slug } = await params;
+  const project = await client.fetch(projectBySlugQuery, { slug });
 
   const coverUrl = project?.coverUrl || project?.thumbUrl || null;
 
@@ -22,7 +20,6 @@ export default async function ProjectPage({ params }: any) {
     <>
       <Header />
 
-      {/* Banner/Capa (só renderiza se existir) */}
       {coverUrl && (
         <ProjectHero
           coverUrl={project?.coverUrl}
@@ -31,34 +28,18 @@ export default async function ProjectPage({ params }: any) {
         />
       )}
 
-      {/* Infos à esquerda + vídeo principal à direita */}
-      {project ? (
-        <>
-          <PT
-            title={project?.title || ""}
-            client={project?.client || ""}
-            date={project?.date || ""}
-            description={project?.description || ""}
-            longDescription={project?.longDescription || []}
-            videos={project?.videos || []}
-            embedUrl={project?.embedUrl || null}
-            link={project?.link || null}
-          />
+      <PT
+        title={project?.title || ""}
+        client={project?.client || ""}
+        date={project?.date || ""}
+        description={project?.description || ""}
+        longDescription={project?.longDescription || []}
+        videos={project?.videos || []}
+        embedUrl={project?.embedUrl || null}
+        link={project?.link || null}   // <- mantém isso aqui
+      />
 
-          {/* Galeria de fotos */}
-          <Gallery items={project?.gallery || []} />
-
-          {/* VÍDEOS (lista completa) — pós galeria */}
-          <Videos
-            videos={project?.videos || []}
-            embedUrl={project?.embedUrl || null}
-          />
-        </>
-      ) : (
-        <main className="min-h-[40vh] flex items-center justify-center">
-          <p className="text-neutral-400">Projeto não encontrado.</p>
-        </main>
-      )}
+      <Gallery items={project?.gallery || []} />
 
       <Footer />
     </>
