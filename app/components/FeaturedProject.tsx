@@ -1,56 +1,96 @@
-import Image, { StaticImageData } from "next/image";
+"use client";
 
-type Img = StaticImageData | string;
+import Image from "next/image";
+import { useMemo } from "react";
 
 type Props = {
-  link: string;
   title: string;
-  description: string;
-  image: Img;
-  embedUrl?: string;
+  description?: string;
+  image?: string; // url da thumb
+  link?: string; // url normal (watch / youtu.be)
+  embedUrl?: string; // url já no formato /embed/
 };
 
-export default function FeaturedProject({ link, title, description, image, embedUrl }: Props) {
+function toYouTubeEmbed(url?: string): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    // youtu.be/<id>
+    if (u.hostname.includes("youtu.be")) {
+      const id = u.pathname.replace("/", "");
+      return id ? `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1` : null;
+    }
+    // www.youtube.com/watch?v=<id>
+    if (u.hostname.includes("youtube.com")) {
+      const id = u.searchParams.get("v");
+      if (id) return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
+      // shorts/<id>
+      const m = u.pathname.match(/\/shorts\/([^/?#]+)/);
+      if (m?.[1]) return `https://www.youtube.com/embed/${m[1]}?rel=0&modestbranding=1`;
+      // já é /embed/
+      if (u.pathname.startsWith("/embed/")) return url;
+    }
+  } catch {}
+  return null;
+}
+
+export default function FeaturedProject({ title, description, image, link, embedUrl }: Props) {
+  const finalEmbed = useMemo(() => embedUrl || toYouTubeEmbed(link), [embedUrl, link]);
+
   return (
-    <section className="relative isolate overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-900/50">
-      <div className="aspect-video w-full overflow-hidden rounded-t-3xl bg-neutral-800">
-        {embedUrl ? (
+    <article className="w-full">
+      <div className="relative w-full aspect-video overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900">
+        {finalEmbed ? (
           <iframe
-            src={embedUrl}
             className="h-full w-full"
+            src={finalEmbed}
+            title={title}
+            loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
           />
-        ) : (
-          <div className="relative w-full h-full">
+        ) : image ? (
+          <a
+            href={link || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block h-full w-full"
+            aria-label={`Abrir ${title} no YouTube`}
+          >
+            {/* Thumb como fallback */}
             <Image
-              src={image as any}
+              src={image}
               alt={title}
               fill
-              className="object-cover"
-              sizes="100vw"
-              priority
+              className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             />
+            <div className="pointer-events-none absolute inset-0 bg-black/20" />
+          </a>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-neutral-400">
+            Sem player nem thumb — adicione o **Embed URL** ou **Link** no admin.
           </div>
         )}
       </div>
 
-      <div className="p-6 sm:p-8 flex items-start justify-between gap-6">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-semibold leading-tight">{title}</h2>
-          <p className="mt-2 text-neutral-300">{description}</p>
-        </div>
-        {!embedUrl && (
+      <header className="mt-4">
+        <h3 className="text-xl font-semibold">{title}</h3>
+        {description ? <p className="text-neutral-300">{description}</p> : null}
+      </header>
+
+      {!finalEmbed && link ? (
+        <div className="mt-4">
           <a
             href={link}
             target="_blank"
-            className="shrink-0 inline-flex items-center rounded-full border border-neutral-700 px-4 py-2 text-sm text-neutral-200 hover:bg-neutral-800 hover:border-neutral-600 transition"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-full border border-neutral-700 px-4 py-2 text-sm hover:bg-neutral-800 transition"
           >
-            Assistir case
+            Ver no YouTube
           </a>
-        )}
-      </div>
-    </section>
+        </div>
+      ) : null}
+    </article>
   );
 }
