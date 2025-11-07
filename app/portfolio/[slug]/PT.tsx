@@ -9,10 +9,10 @@ type Props = {
   client: string;
   date: string;
   description?: string;
-  longDescription?: any[]; // mantendo flexível pra não quebrar
+  longDescription?: any[];
   videos?: VideoItem[];
   embedUrl?: string | null;
-  link?: string | null; // fallback (YouTube normal) caso não tenha embedUrl
+  link?: string | null;
 };
 
 function fmtDate(iso?: string) {
@@ -35,62 +35,18 @@ export default function PT({
   embedUrl = null,
   link = null,
 }: Props) {
-  // vídeo PRINCIPAL: tenta embedUrl, senão link (normal/shorts), senão null
   const main = toEmbed(embedUrl || link || "");
 
   return (
     <section className="border-y border-neutral-800 bg-neutral-900/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-        {/* Cabeçalho */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
-          {/* Coluna esquerda: infos */}
-          <div className="space-y-4">
-            <h1 className="text-3xl md:text-4xl font-semibold leading-tight">
-              {title}
-            </h1>
-
-            {client && (
-              <p className="text-neutral-400 text-base">{client}</p>
-            )}
-
-            <div className="text-neutral-300 space-y-2">
-              {description && (
-                <p className="text-neutral-200">{description}</p>
-              )}
-
-              {/* descrição longa simples, sem libs extras */}
-              {Array.isArray(longDescription) && longDescription.length > 0 && (
-                <div className="pt-2 space-y-2">
-                  {longDescription.map((blk: any, i: number) => {
-                    // tenta achar texto nos children (estrutura típica do Sanity)
-                    const txt =
-                      Array.isArray(blk?.children)
-                        ? blk.children.map((c: any) => c?.text).join("")
-                        : typeof blk === "string"
-                        ? blk
-                        : "";
-                    return txt ? (
-                      <p key={i} className="text-neutral-300">
-                        {txt}
-                      </p>
-                    ) : null;
-                  })}
-                </div>
-              )}
-
-              {date && (
-                <p className="text-sm text-neutral-400">
-                  {fmtDate(date)}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Coluna direita: VÍDEO PRINCIPAL */}
+        {/* Agora o VÍDEO vem primeiro (esquerda no desktop) e o texto fica à direita */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-start">
+          {/* Coluna do VÍDEO – esquerda no md+ */}
           <div
             className={
               main?.aspect === "9:16"
-                ? "flex justify-center md:justify-end"
+                ? "flex justify-center md:justify-start"
                 : ""
             }
           >
@@ -98,10 +54,8 @@ export default function PT({
               <div
                 className={`relative overflow-hidden rounded-2xl border border-neutral-800 ${
                   main.aspect === "9:16"
-                    // Shorts: box mais estreito, centralizado no mobile
                     ? "aspect-[9/16] w-[min(90vw,420px)] md:w-[380px]"
-                    : // 16:9 permanece full
-                      "aspect-video w-full"
+                    : "aspect-video w-full"
                 }`}
               >
                 <iframe
@@ -120,9 +74,44 @@ export default function PT({
               </div>
             )}
           </div>
+
+          {/* Coluna de INFORMAÇÕES – direita no md+ */}
+          <div className="space-y-4">
+            <h1 className="text-3xl md:text-4xl font-semibold leading-tight">
+              {title}
+            </h1>
+
+            {client && <p className="text-neutral-400 text-base">{client}</p>}
+
+            <div className="text-neutral-300 space-y-2">
+              {description && <p className="text-neutral-200">{description}</p>}
+
+              {Array.isArray(longDescription) && longDescription.length > 0 && (
+                <div className="pt-2 space-y-2">
+                  {longDescription.map((blk: any, i: number) => {
+                    const txt =
+                      Array.isArray(blk?.children)
+                        ? blk.children.map((c: any) => c?.text).join("")
+                        : typeof blk === "string"
+                        ? blk
+                        : "";
+                    return txt ? (
+                      <p key={i} className="text-neutral-300">
+                        {txt}
+                      </p>
+                    ) : null;
+                  })}
+                </div>
+              )}
+
+              {date && (
+                <p className="text-sm text-neutral-400">{fmtDate(date)}</p>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Lista de VÍDEOS adicionais (se houver) */}
+        {/* Vídeos adicionais (se houver) */}
         {Array.isArray(videos) && videos.length > 0 && (
           <div className="mt-12">
             <h2 className="text-xl font-semibold mb-4">Vídeos</h2>
