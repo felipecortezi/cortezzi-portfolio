@@ -1,49 +1,32 @@
-export type Embed = { src: string; isShort: boolean };
+export type Embed = { src: string; aspect: "16:9" | "9:16" };
 
-export default function toEmbed(raw?: string | null): Embed | null {
-  if (!raw) return null;
-
+/**
+ * Converte URLs do YouTube (watch, youtu.be, shorts) em embed seguro.
+ * Retorna null se inválido.
+ */
+export function toEmbed(input?: string | null): Embed | null {
+  if (!input) return null;
   try {
-    const u = new URL(raw);
+    const u = new URL(input.trim());
+    const host = u.hostname.replace(/^www\./, "");
+    let id = "";
+    let aspect: "16:9" | "9:16" = "16:9";
 
-    // Youtu.be curto
-    if (u.hostname.includes("youtu.be")) {
-      const id = u.pathname.replace("/", "");
-      return {
-        src: `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&playsinline=1`,
-        isShort: false,
-      };
-    }
-
-    // YouTube
-    if (u.hostname.includes("youtube.com")) {
-      // shorts
+    if (host === "youtu.be") {
+      id = u.pathname.slice(1);
+    } else if (host.endsWith("youtube.com")) {
       if (u.pathname.startsWith("/shorts/")) {
-        const id = u.pathname.split("/shorts/")[1].split("/")[0];
-        return {
-          src: `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&playsinline=1`,
-          isShort: true,
-        };
-      }
-      // watch?v=...
-      const id = u.searchParams.get("v");
-      if (id) {
-        return {
-          src: `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&playsinline=1`,
-          isShort: false,
-        };
+        id = u.pathname.split("/")[2] || "";
+        aspect = "9:16";
+      } else {
+        id = u.searchParams.get("v") || u.pathname.split("/").pop() || "";
       }
     }
 
-    // Vimeo (padrão 16:9)
-    if (u.hostname.includes("vimeo.com")) {
-      const id = u.pathname.split("/").filter(Boolean).pop();
-      if (id) {
-        return { src: `https://player.vimeo.com/video/${id}`, isShort: false };
-      }
-    }
+    if (!id) return null;
 
-    return null;
+    const src = `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
+    return { src, aspect };
   } catch {
     return null;
   }
