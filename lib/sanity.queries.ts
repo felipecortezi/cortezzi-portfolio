@@ -49,17 +49,21 @@ export const featuredProjectQuery = `
 }
 `;
 
-// Detalhe: projeto por slug
+// Detalhe: projeto por slug (agora com cover, details, gallery e videos)
 export const projectBySlugQuery = `
 *[_type=="project" && slug.current == $slug][0]{
   _id,
   title,
   "slug": slug.current,
   description,
+  details,
   client,
   date,
   link,
   embedUrl,
-  "thumbUrl": thumb.asset->url
+  "thumbUrl": thumb.asset->url,
+  "coverUrl": cover.asset->url,
+  "gallery": gallery[]{ "url": asset->url },
+  videos[]{ title, link, embedUrl, aspect }
 }
 `;
