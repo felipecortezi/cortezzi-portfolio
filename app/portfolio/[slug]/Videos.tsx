@@ -1,35 +1,45 @@
 "use client";
 
-import toEmbed from "./toEmbed";
+import React from "react";
+import { toEmbed, Embed } from "./toEmbed";
 
-type VideoItem = { url?: string | null };
+type VideoItem = { url?: string | null; orientation?: "16:9" | "9:16" };
 
-export default function Videos({ items = [] as VideoItem[] }) {
-  if (!Array.isArray(items) || items.length === 0) return null;
+export default function Videos({ items }: { items?: VideoItem[] }) {
+  try {
+    const list: Embed[] = (items || [])
+      .map((v) => toEmbed((v?.url || "").trim()))
+      .filter((e): e is Embed => !!e);
 
-  return (
-    <section className="mt-12">
-      <h2 className="text-xl font-semibold mb-4">Vídeos</h2>
+    if (list.length === 0) return null;
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {items.map((v, i) => {
-          const e = toEmbed(v?.url || null);
-          if (!e) return null;
-          const ratio = e.isShort ? "aspect-[9/16]" : "aspect-video";
-          return (
-            <div key={i} className={`w-full overflow-hidden rounded-2xl bg-black ${ratio}`}>
+    return (
+      <section className="mt-10">
+        <h3 className="text-xl font-semibold mb-4">Vídeos</h3>
+        <div className="grid gap-6 md:grid-cols-2">
+          {list.map((e, idx) => (
+            <div
+              key={idx}
+              className={`relative w-full overflow-hidden rounded-2xl border border-neutral-800 ${
+                e.aspect === "9:16" ? "aspect-[9/16]" : "aspect-video"
+              }`}
+            >
               <iframe
-                className="h-full w-full"
+                className="absolute inset-0 h-full w-full"
                 src={e.src}
-                title={`Vídeo ${i + 1}`}
+                title={`video-${idx}`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
                 referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                loading="lazy"
               />
             </div>
-          );
-        })}
-      </div>
-    </section>
-  );
+          ))}
+        </div>
+      </section>
+    );
+  } catch {
+    // Nunca deixa a página quebrar
+    return null;
+  }
 }
