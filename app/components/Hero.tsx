@@ -30,7 +30,7 @@ export default function Hero() {
 
             <div className="flex flex-wrap gap-3 pt-1">
               <a
-                href="#cta"
+                href="#contact"
                 className="inline-flex rounded-xl bg-white text-neutral-900 px-5 py-3 font-medium hover:bg-neutral-200 transition text-base md:text-lg"
               >
                 Pedir Orçamento
