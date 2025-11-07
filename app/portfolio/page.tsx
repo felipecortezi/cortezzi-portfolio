@@ -10,11 +10,19 @@ export const metadata = {
   description: "Trabalhos e cases de Felipe Cortezi",
 };
 
+export const revalidate = 60;
+
 export default async function PortfolioPage() {
   const [featured, projects] = await Promise.all([
     client.fetch(featuredProjectQuery),
     client.fetch(allProjectsQuery),
   ]);
+
+  // monta href do destaque priorizando o slug
+  const featuredHref =
+    (featured && featured.slug)
+      ? `/portfolio/${featured.slug}`
+      : (featured?.link || "#");
 
   return (
     <>
@@ -24,13 +32,15 @@ export default async function PortfolioPage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
             <div className="mb-8">
               <h1 className="text-3xl font-semibold">Todos os trabalhos</h1>
-              <p className="text-neutral-300 mt-1">Seleção de cases recentes em captação, edição e motion.</p>
+              <p className="text-neutral-300 mt-1">
+                Seleção de cases recentes em captação, edição e motion.
+              </p>
             </div>
 
-            {featured && (
+            {!!featured && (
               <div className="mb-10">
                 <FeaturedProject
-                  link={featured.link || "#"}
+                  link={featuredHref}
                   title={featured.title}
                   description={featured.description || ""}
                   image={featured.thumbUrl}
@@ -40,16 +50,18 @@ export default async function PortfolioPage() {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((p: any) => (
-                <Job
-                  key={p._id}
-                  slug={p.slug}                 // <-- agora abre /portfolio/[slug]
-                  link={p.link || "#"}          // fallback se não tiver slug
-                  title={p.title}
-                  description={p.description || ""}
-                  image={p.thumbUrl}
-                />
-              ))}
+              {projects.map((p: any) => {
+                const href = p.slug ? `/portfolio/${p.slug}` : (p.link || "#");
+                return (
+                  <Job
+                    key={p._id}
+                    link={href}
+                    title={p.title}
+                    description={p.description || ""}
+                    image={p.thumbUrl}
+                  />
+                );
+              })}
             </div>
           </div>
         </section>
@@ -58,5 +70,3 @@ export default async function PortfolioPage() {
     </>
   );
 }
-
-export const revalidate = 60;
