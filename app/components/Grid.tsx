@@ -15,17 +15,21 @@ export default async function Grid() {
           </div>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((p: any) => (
-            <Job
-              key={p._id}
-              link={p.link || "#"}
-              title={p.title}
-              description={p.description || ""}
-              image={p.thumbUrl}
-            />
-          ))}
-        </div>
+        {projects?.length ? (
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.map((p: any) => (
+              <Job
+                key={p._id}
+                link={p.link || "#"}
+                title={p.title}
+                description={p.description || ""}
+                image={p.thumbUrl}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-8 text-neutral-400">Em breve, novos projetos aqui.</p>
+        )}
 
         <div className="mt-10 flex justify-center">
           <a
@@ -40,4 +44,6 @@ export default async function Grid() {
   );
 }
 
-export const revalidate = 60;
+// Atualiza o conteúdo com frequência
+export const revalidate = 1;
+// (alternativa) export const dynamic = "force-dynamic";
