@@ -1,63 +1,44 @@
-"use client";
-import { useState } from "react";
 import Image from "next/image";
 
-type Item = { _key: string; url: string; alt?: string };
+type Item = { imageUrl: string; ratio?: "5:4" | "4:5" | "1:1" | "16:9" };
+type Props = { items?: Item[] };
 
-export default function Gallery({ items }: { items: Item[] }) {
-  const [active, setActive] = useState<Item | null>(null);
+function ratioClass(r?: Item["ratio"]) {
+  switch (r) {
+    case "4:5": return "aspect-[4/5]";
+    case "1:1": return "aspect-square";
+    case "16:9": return "aspect-video";
+    case "5:4":
+    default:    return "aspect-[5/4]";
+  }
+}
+
+export default function Gallery({ items }: Props) {
   if (!items?.length) return null;
 
   return (
-    <section className="mt-12">
-      <h3 className="text-lg font-medium mb-4">Galeria</h3>
+    <section className="px-4 sm:px-6 lg:px-8 py-10 max-w-7xl mx-auto">
+      <h3 className="text-xl font-medium mb-6">Galeria</h3>
 
-      {/* Masonry com columns; imagens evitam quebra */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
-        {items.map((it) => (
-          <button
-            key={it._key}
-            className="mb-4 block w-full overflow-hidden rounded-xl hover:scale-[1.02] transition will-change-transform"
-            onClick={() => setActive(it)}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {items.map((it, i) => (
+          <div
+            key={i}
+            className={`group overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/30 ${ratioClass(it.ratio)}`}
           >
-            {/* Nota: object-cover + altura automática via intrinsic */}
-            <Image
-              src={it.url}
-              alt={it.alt || ""}
-              width={1200}
-              height={800}
-              className="w-full h-auto rounded-xl"
-              sizes="(max-width:1024px) 50vw, 33vw"
-            />
-          </button>
+            <div className="relative w-full h-full">
+              {/* zoom somente no conteúdo */}
+              <Image
+                src={it.imageUrl}
+                alt={`Imagem ${i + 1}`}
+                fill
+                sizes="(max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              />
+            </div>
+          </div>
         ))}
       </div>
-
-      {/* Lightbox */}
-      {active && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setActive(null)}
-        >
-          <div className="relative max-w-6xl w-full">
-            <Image
-              src={active.url}
-              alt={active.alt || ""}
-              width={2000}
-              height={1400}
-              className="w-full h-auto rounded-2xl"
-              sizes="100vw"
-              priority
-            />
-            <button
-              className="absolute top-3 right-3 bg-white/10 rounded-full px-3 py-1 text-sm hover:bg-white/20"
-              onClick={() => setActive(null)}
-            >
-              fechar
-            </button>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
