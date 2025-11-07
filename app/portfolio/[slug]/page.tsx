@@ -4,104 +4,113 @@ import Footer from "../../components/Footer";
 import { client } from "../../../lib/sanity.client";
 import { projectBySlugQuery } from "../../../lib/sanity.queries";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-// gerar metadados dinâmicos (seguro mesmo se faltar campos)
-export async function generateMetadata(
-  { params }: { params: { slug: string } }
-): Promise<Metadata> {
-  const project = await client.fetch(projectBySlugQuery, { slug: params.slug });
-  if (!project) return { title: "Projeto não encontrado • Cortezzi" };
-  return {
-    title: `${project.title} • Cortezzi`,
-    description: project.description?.slice?.(0, 160) ?? "Projeto do portfólio Cortezzi",
-  };
-}
+// ---- Tipagem local para evitar conflito com tipos globais do projeto ----
+type RouteParams = { params: { slug: string } };
 
+// Revalida a página com frequência
 export const revalidate = 60;
 
-// helper: converte link do YouTube para embed (retorna null se não der)
+/** Converte links comuns do YouTube/Vimeo em "embed" quando possível */
 function toEmbed(url?: string | null): string | null {
   if (!url) return null;
   try {
     const u = new URL(url);
+
+    // YouTube (domínios yt, youtu.be, etc.)
     const host = u.hostname.replace(/^www\./, "");
-    // youtube.com / youtu.be
-    if (host.includes("youtube.com")) {
-      // watch?v=ID ou shorts/ID
-      if (u.pathname.startsWith("/watch")) {
-        const id = u.searchParams.get("v");
+    if (host.includes("youtube.com") || host === "youtu.be") {
+      // short: youtu.be/VIDEOID
+      if (host === "youtu.be") {
+        const id = u.pathname.replace("/", "");
         return id ? `https://www.youtube.com/embed/${id}` : null;
       }
-      if (u.pathname.startsWith("/shorts/")) {
-        const id = u.pathname.split("/shorts/")[1]?.split("/")[0];
-        return id ? `https://www.youtube.com/embed/${id}` : null;
-      }
+      // normal: watch?v=VIDEOID
+      const id = u.searchParams.get("v");
+      if (id) return `https://www.youtube.com/embed/${id}`;
+      // shorts: /shorts/VIDEOID
+      const parts = u.pathname.split("/");
+      const shortId = parts.includes("shorts") ? parts.pop() : null;
+      if (shortId) return `https://www.youtube.com/embed/${shortId}`;
     }
-    if (host.includes("youtu.be")) {
-      const id = u.pathname.replace("/", "");
-      return id ? `https://www.youtube.com/embed/${id}` : null;
+
+    // Vimeo
+    if (host.includes("vimeo.com")) {
+      const id = u.pathname.split("/").filter(Boolean).pop();
+      return id ? `https://player.vimeo.com/video/${id}` : null;
     }
+
     return null;
   } catch {
     return null;
   }
 }
 
-export default async function ProjectPage({ params }: { params: { slug: string } }) {
-  const project = await client.fetch(projectBySlugQuery, { slug: params.slug });
-
-  // 404 elegante se não existir
+/** Metadata dinâmica por projeto */
+export async function generateMetadata(
+  { params }: RouteParams
+): Promise<Metadata> {
+  const project: any = await client.fetch(projectBySlugQuery, { slug: params.slug });
   if (!project) {
-    return (
-      <>
-        <Header />
-        <main className="bg-neutral-950">
-          <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-24 text-center">
-            <h1 className="text-3xl font-semibold">Projeto não encontrado</h1>
-            <p className="text-neutral-400 mt-2">Verifique o link ou volte ao portfólio.</p>
-          </section>
-        </main>
-        <Footer />
-      </>
-    );
+    return { title: "Projeto não encontrado • Cortezzi" };
+  }
+  return {
+    title: `${project.title} • Cortezzi`,
+    description:
+      project.detail?.[0]?.children?.map((c: any) => c.text).join(" ").slice(0, 160) ||
+      project.description?.slice?.(0, 160) ||
+      "Projeto do portfólio Cortezzi",
+    openGraph: {
+      title: project.title,
+      images: project.bannerUrl ? [{ url: project.bannerUrl }] : undefined,
+    },
+  };
+}
+
+/** Página de Projeto */
+export default async function ProjectPage({ params }: RouteParams) {
+  const project: any = await client.fetch(projectBySlugQuery, { slug: params.slug });
+
+  if (!project) {
+    notFound();
   }
 
   const {
     title,
-    client: cliente,
+    client: clientName,
     date,
     description,
+    detail,
+    bannerUrl,
     thumbUrl,
-    bannerUrl,           // pode estar undefined
-    link,
     embedUrl,
-    gallery,             // pode estar undefined
-    videos,              // pode estar undefined
-  } = project as any;
+    link,
+    gallery = [],
+    videos = [],
+  } = project;
 
-  // fallbacks seguros
-  const heroImage = bannerUrl || thumbUrl || null;
-  const embed = embedUrl || toEmbed(link) || null;
-  const gallerySafe = Array.isArray(gallery) ? gallery : [];
-  const videosSafe = Array.isArray(videos) ? videos : [];
+  const year = date ? new Date(date).getFullYear() : undefined;
+
+  const mainEmbed =
+    embedUrl || toEmbed(link) || null;
 
   return (
     <>
       <Header />
       <main className="bg-neutral-950">
-
-        {/* Banner (só renderiza se existir alguma imagem) */}
-        {heroImage && (
+        {/* Banner de capa (faixa larga) */}
+        {(bannerUrl || thumbUrl) && (
           <section className="relative border-b border-neutral-800 bg-neutral-900/40">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-              <div className="overflow-hidden rounded-2xl border border-neutral-800">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+              <div className="relative w-full overflow-hidden rounded-2xl border border-neutral-800">
                 <div className="relative aspect-[21/9] w-full">
                   <Image
-                    src={heroImage}
+                    src={bannerUrl || thumbUrl}
                     alt={title}
                     fill
-                    className="object-cover"
                     priority
+                    className="object-cover"
                   />
                 </div>
               </div>
@@ -110,29 +119,29 @@ export default async function ProjectPage({ params }: { params: { slug: string }
         )}
 
         {/* Cabeçalho do projeto */}
-        <section className="border-b border-neutral-800 bg-neutral-900/40">
+        <section className="border-b border-neutral-800">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-            <h1 className="text-3xl font-semibold">{title}</h1>
-            <p className="text-neutral-300 mt-2">
-              {cliente ? <span className="mr-2">Cliente: {cliente}</span> : null}
-              {date ? <span>• {new Date(date).getFullYear()}</span> : null}
-            </p>
-            {description && (
-              <p className="text-neutral-300 mt-4 max-w-3xl leading-relaxed">
-                {description}
-              </p>
-            )}
+            <div className="flex flex-col gap-3">
+              <h1 className="text-3xl font-semibold">{title}</h1>
+              <div className="text-neutral-300">
+                {clientName && <span className="mr-3">Cliente: {clientName}</span>}
+                {year && <span>• {year}</span>}
+              </div>
+              {description && (
+                <p className="text-neutral-300 max-w-3xl">{description}</p>
+              )}
+            </div>
           </div>
         </section>
 
-        {/* Vídeo principal (embed) */}
-        {embed && (
+        {/* Vídeo principal (se houver) */}
+        {mainEmbed && (
           <section className="border-b border-neutral-800 bg-neutral-900/40">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
               <div className="relative w-full overflow-hidden rounded-2xl border border-neutral-800">
-                <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+                <div className="relative aspect-video w-full">
                   <iframe
-                    src={embed}
+                    src={mainEmbed}
                     className="absolute inset-0 h-full w-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
@@ -144,15 +153,45 @@ export default async function ProjectPage({ params }: { params: { slug: string }
           </section>
         )}
 
-        {/* Galeria de frames (só se tiver itens) */}
-        {gallerySafe.length > 0 && (
+        {/* Descrição detalhada (Portable Text simples) */}
+        {(detail && Array.isArray(detail) && detail.length > 0) && (
+          <section className="border-b border-neutral-800">
+            <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 prose prose-invert">
+              {detail.map((block: any, i: number) => {
+                if (block._type === "block") {
+                  return (
+                    <p key={i}>
+                      {(block.children || [])
+                        .map((c: any) => c?.text)
+                        .join("")}
+                    </p>
+                  );
+                }
+                return null;
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Galeria de imagens (se houver) */}
+        {Array.isArray(gallery) && gallery.length > 0 && (
           <section className="border-b border-neutral-800 bg-neutral-900/40">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-              <h2 className="text-xl font-semibold mb-4">Galeria</h2>
+              <h2 className="text-xl font-semibold mb-6">Galeria</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {gallerySafe.map((src: string, i: number) => (
-                  <div key={i} className="relative aspect-[4/3] overflow-hidden rounded-xl border border-neutral-800">
-                    <Image src={src} alt={`${title} – frame ${i + 1}`} fill className="object-cover" />
+                {gallery.map((url: string, idx: number) => (
+                  <div
+                    key={idx}
+                    className="relative overflow-hidden rounded-xl border border-neutral-800"
+                  >
+                    <div className="relative aspect-[4/3] w-full">
+                      <Image
+                        src={url}
+                        alt={`${title} - imagem ${idx + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -160,46 +199,33 @@ export default async function ProjectPage({ params }: { params: { slug: string }
           </section>
         )}
 
-        {/* Vídeos adicionais (só se tiver itens) */}
-        {videosSafe.length > 0 && (
-          <section className="border-b border-neutral-800 bg-neutral-900/40">
+        {/* Demais vídeos (se houver) */}
+        {Array.isArray(videos) && videos.length > 0 && (
+          <section className="border-b border-neutral-800">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-              <h2 className="text-xl font-semibold mb-4">Outros vídeos</h2>
+              <h2 className="text-xl font-semibold mb-6">Vídeos</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {videosSafe.map((v: string, i: number) => {
-                  const e = toEmbed(v);
-                  if (!e) return null;
+                {videos.map((v: any, idx: number) => {
+                  const emb = v?.embedUrl || toEmbed(v?.url);
+                  if (!emb) return null;
                   return (
-                    <div key={i} className="relative w-full overflow-hidden rounded-2xl border border-neutral-800">
-                      <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+                    <div
+                      key={idx}
+                      className="relative overflow-hidden rounded-2xl border border-neutral-800"
+                    >
+                      <div className="relative aspect-video w-full">
                         <iframe
-                          src={e}
+                          src={emb}
                           className="absolute inset-0 h-full w-full"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                           allowFullScreen
-                          title={`${title} – vídeo ${i + 1}`}
+                          title={`${title} – vídeo ${idx + 1}`}
                         />
                       </div>
                     </div>
                   );
                 })}
               </div>
-            </div>
-          </section>
-        )}
-
-        {/* Link externo (se não tiver embed, ainda damos uma saída) */}
-        {!embed && link && (
-          <section className="border-b border-neutral-800 bg-neutral-900/40">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center rounded-full border border-neutral-700 px-5 py-2.5 text-sm text-neutral-200 hover:bg-neutral-800 hover:border-neutral-600 transition"
-              >
-                Ver no YouTube
-              </a>
             </div>
           </section>
         )}
