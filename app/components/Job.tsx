@@ -7,8 +7,8 @@ type Props = {
   title: string;
   description?: string;
   image: Img;
-  slug?: string | null;   // <- novo
-  link?: string;          // fallback (se não tiver slug)
+  slug?: string | null;   // abre /portfolio/[slug] quando houver
+  link?: string;          // fallback (YouTube etc.) caso não tenha slug
 };
 
 export default function Job({ title, description, image, slug, link }: Props) {
