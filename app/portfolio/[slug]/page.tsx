@@ -33,44 +33,43 @@ function toEmbed(url?: string | null): string | null {
       const id = u.pathname.split("/").filter(Boolean).pop();
       return id ? `https://player.vimeo.com/video/${id}` : null;
     }
-
     return null;
   } catch {
     return null;
   }
 }
 
-/** Metadata dinâmica por projeto (assinatura compatível com Next 15) */
+/** Metadata dinâmica por projeto */
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> },
   _parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { slug } = await params;
-
   const project: any = await client.fetch(projectBySlugQuery, { slug });
-  if (!project) {
-    return { title: "Projeto não encontrado • Cortezzi" };
-  }
+  if (!project) return { title: "Projeto não encontrado • Cortezzi" };
+
+  const desc =
+    (Array.isArray(project.detail) &&
+      project.detail[0]?.children?.map((c: any) => c.text).join(" ").slice(0, 160)) ||
+    project.description ||
+    "Projeto do portfólio Cortezzi";
 
   return {
     title: `${project.title} • Cortezzi`,
-    description:
-      project.detail?.[0]?.children?.map((c: any) => c.text).join(" ").slice(0, 160) ||
-      project.description?.slice?.(0, 160) ||
-      "Projeto do portfólio Cortezzi",
+    description: desc,
     openGraph: {
       title: project.title,
+      description: desc,
       images: project.bannerUrl ? [{ url: project.bannerUrl }] : undefined,
     },
   };
 }
 
-/** Página do Projeto (assinatura compatível com Next 15) */
+/** Página do Projeto */
 export default async function ProjectPage(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
-
   const project: any = await client.fetch(projectBySlugQuery, { slug });
   if (!project) notFound();
 
@@ -84,7 +83,7 @@ export default async function ProjectPage(
     thumbUrl,
     embedUrl,
     link,
-    gallery = [],
+    galleryUrls = [],
     videos = [],
   } = project;
 
@@ -95,14 +94,14 @@ export default async function ProjectPage(
     <>
       <Header />
       <main className="bg-neutral-950">
-        {/* Banner de capa */}
-        {(bannerUrl || thumbUrl) && (
+        {/* Banner de capa (sem fallback para thumb para evitar confusão) */}
+        {bannerUrl && (
           <section className="relative border-b border-neutral-800 bg-neutral-900/40">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
               <div className="relative w-full overflow-hidden rounded-2xl border border-neutral-800">
                 <div className="relative aspect-[21/9] w-full">
                   <Image
-                    src={bannerUrl || thumbUrl}
+                    src={bannerUrl}
                     alt={title}
                     fill
                     priority
@@ -123,7 +122,11 @@ export default async function ProjectPage(
                 {clientName && <span className="mr-3">Cliente: {clientName}</span>}
                 {year && <span>• {year}</span>}
               </div>
-              {description && <p className="text-neutral-300 max-w-3xl">{description}</p>}
+
+              {/* descrição curta */}
+              {description && (
+                <p className="text-neutral-300 max-w-3xl">{description}</p>
+              )}
             </div>
           </div>
         </section>
@@ -151,27 +154,22 @@ export default async function ProjectPage(
         {Array.isArray(detail) && detail.length > 0 && (
           <section className="border-b border-neutral-800">
             <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 prose prose-invert">
-              {detail.map((block: any, i: number) => {
-                if (block._type === "block") {
-                  return (
-                    <p key={i}>
-                      {(block.children || []).map((c: any) => c?.text).join("")}
-                    </p>
-                  );
-                }
-                return null;
-              })}
+              {detail.map((block: any, i: number) =>
+                block._type === "block" ? (
+                  <p key={i}>{(block.children || []).map((c: any) => c?.text).join("")}</p>
+                ) : null
+              )}
             </div>
           </section>
         )}
 
-        {/* Galeria de imagens */}
-        {Array.isArray(gallery) && gallery.length > 0 && (
+        {/* Galeria */}
+        {Array.isArray(galleryUrls) && galleryUrls.length > 0 && (
           <section className="border-b border-neutral-800 bg-neutral-900/40">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
               <h2 className="text-xl font-semibold mb-6">Galeria</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {gallery.map((url: string, idx: number) => (
+                {galleryUrls.map((url: string, idx: number) => (
                   <div key={idx} className="relative overflow-hidden rounded-xl border border-neutral-800">
                     <div className="relative aspect-[4/3] w-full">
                       <Image
@@ -188,7 +186,7 @@ export default async function ProjectPage(
           </section>
         )}
 
-        {/* Demais vídeos */}
+        {/* Demais vídeos com orientação */}
         {Array.isArray(videos) && videos.length > 0 && (
           <section className="border-b border-neutral-800">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
@@ -197,9 +195,11 @@ export default async function ProjectPage(
                 {videos.map((v: any, idx: number) => {
                   const emb = v?.embedUrl || toEmbed(v?.url);
                   if (!emb) return null;
+                  const aspect =
+                    v?.orientation === "vertical" ? "aspect-[9/16]" : "aspect-video";
                   return (
                     <div key={idx} className="relative overflow-hidden rounded-2xl border border-neutral-800">
-                      <div className="relative aspect-video w-full">
+                      <div className={`relative ${aspect} w-full`}>
                         <iframe
                           src={emb}
                           className="absolute inset-0 h-full w-full"
