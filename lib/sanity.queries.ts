@@ -69,3 +69,15 @@ export const projectBySlugQuery = `
   }
 }
 `;
+
+export const threeLatestExceptQuery = `
+*[_type == "project" && slug.current != $slug]
+| order(coalesce(date, _updatedAt, _createdAt) desc)[0...3]{
+  _id,
+  title,
+  "slug": slug.current,
+  description,
+  "thumbUrl": thumb.asset->url
+}
+`;
+
