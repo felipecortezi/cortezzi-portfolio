@@ -3,13 +3,9 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { client } from "../../../lib/sanity.client";
 import { projectBySlugQuery } from "../../../lib/sanity.queries";
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 
-// ---- Tipagem local para evitar conflito com tipos globais do projeto ----
-type RouteParams = { params: { slug: string } };
-
-// Revalida a página com frequência
 export const revalidate = 60;
 
 /** Converte links comuns do YouTube/Vimeo em "embed" quando possível */
@@ -17,19 +13,16 @@ function toEmbed(url?: string | null): string | null {
   if (!url) return null;
   try {
     const u = new URL(url);
-
-    // YouTube (domínios yt, youtu.be, etc.)
     const host = u.hostname.replace(/^www\./, "");
+
+    // YouTube
     if (host.includes("youtube.com") || host === "youtu.be") {
-      // short: youtu.be/VIDEOID
       if (host === "youtu.be") {
         const id = u.pathname.replace("/", "");
         return id ? `https://www.youtube.com/embed/${id}` : null;
       }
-      // normal: watch?v=VIDEOID
       const id = u.searchParams.get("v");
       if (id) return `https://www.youtube.com/embed/${id}`;
-      // shorts: /shorts/VIDEOID
       const parts = u.pathname.split("/");
       const shortId = parts.includes("shorts") ? parts.pop() : null;
       if (shortId) return `https://www.youtube.com/embed/${shortId}`;
@@ -47,14 +40,18 @@ function toEmbed(url?: string | null): string | null {
   }
 }
 
-/** Metadata dinâmica por projeto */
+/** Metadata dinâmica por projeto (assinatura compatível com Next 15) */
 export async function generateMetadata(
-  { params }: RouteParams
+  { params }: { params: Promise<{ slug: string }> },
+  _parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const project: any = await client.fetch(projectBySlugQuery, { slug: params.slug });
+  const { slug } = await params;
+
+  const project: any = await client.fetch(projectBySlugQuery, { slug });
   if (!project) {
     return { title: "Projeto não encontrado • Cortezzi" };
   }
+
   return {
     title: `${project.title} • Cortezzi`,
     description:
@@ -68,13 +65,14 @@ export async function generateMetadata(
   };
 }
 
-/** Página de Projeto */
-export default async function ProjectPage({ params }: RouteParams) {
-  const project: any = await client.fetch(projectBySlugQuery, { slug: params.slug });
+/** Página do Projeto (assinatura compatível com Next 15) */
+export default async function ProjectPage(
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params;
 
-  if (!project) {
-    notFound();
-  }
+  const project: any = await client.fetch(projectBySlugQuery, { slug });
+  if (!project) notFound();
 
   const {
     title,
@@ -91,15 +89,13 @@ export default async function ProjectPage({ params }: RouteParams) {
   } = project;
 
   const year = date ? new Date(date).getFullYear() : undefined;
-
-  const mainEmbed =
-    embedUrl || toEmbed(link) || null;
+  const mainEmbed = embedUrl || toEmbed(link) || null;
 
   return (
     <>
       <Header />
       <main className="bg-neutral-950">
-        {/* Banner de capa (faixa larga) */}
+        {/* Banner de capa */}
         {(bannerUrl || thumbUrl) && (
           <section className="relative border-b border-neutral-800 bg-neutral-900/40">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
@@ -118,7 +114,7 @@ export default async function ProjectPage({ params }: RouteParams) {
           </section>
         )}
 
-        {/* Cabeçalho do projeto */}
+        {/* Cabeçalho */}
         <section className="border-b border-neutral-800">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
             <div className="flex flex-col gap-3">
@@ -127,14 +123,12 @@ export default async function ProjectPage({ params }: RouteParams) {
                 {clientName && <span className="mr-3">Cliente: {clientName}</span>}
                 {year && <span>• {year}</span>}
               </div>
-              {description && (
-                <p className="text-neutral-300 max-w-3xl">{description}</p>
-              )}
+              {description && <p className="text-neutral-300 max-w-3xl">{description}</p>}
             </div>
           </div>
         </section>
 
-        {/* Vídeo principal (se houver) */}
+        {/* Vídeo principal */}
         {mainEmbed && (
           <section className="border-b border-neutral-800 bg-neutral-900/40">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
@@ -154,16 +148,14 @@ export default async function ProjectPage({ params }: RouteParams) {
         )}
 
         {/* Descrição detalhada (Portable Text simples) */}
-        {(detail && Array.isArray(detail) && detail.length > 0) && (
+        {Array.isArray(detail) && detail.length > 0 && (
           <section className="border-b border-neutral-800">
             <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 prose prose-invert">
               {detail.map((block: any, i: number) => {
                 if (block._type === "block") {
                   return (
                     <p key={i}>
-                      {(block.children || [])
-                        .map((c: any) => c?.text)
-                        .join("")}
+                      {(block.children || []).map((c: any) => c?.text).join("")}
                     </p>
                   );
                 }
@@ -173,17 +165,14 @@ export default async function ProjectPage({ params }: RouteParams) {
           </section>
         )}
 
-        {/* Galeria de imagens (se houver) */}
+        {/* Galeria de imagens */}
         {Array.isArray(gallery) && gallery.length > 0 && (
           <section className="border-b border-neutral-800 bg-neutral-900/40">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
               <h2 className="text-xl font-semibold mb-6">Galeria</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {gallery.map((url: string, idx: number) => (
-                  <div
-                    key={idx}
-                    className="relative overflow-hidden rounded-xl border border-neutral-800"
-                  >
+                  <div key={idx} className="relative overflow-hidden rounded-xl border border-neutral-800">
                     <div className="relative aspect-[4/3] w-full">
                       <Image
                         src={url}
@@ -199,7 +188,7 @@ export default async function ProjectPage({ params }: RouteParams) {
           </section>
         )}
 
-        {/* Demais vídeos (se houver) */}
+        {/* Demais vídeos */}
         {Array.isArray(videos) && videos.length > 0 && (
           <section className="border-b border-neutral-800">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
@@ -209,10 +198,7 @@ export default async function ProjectPage({ params }: RouteParams) {
                   const emb = v?.embedUrl || toEmbed(v?.url);
                   if (!emb) return null;
                   return (
-                    <div
-                      key={idx}
-                      className="relative overflow-hidden rounded-2xl border border-neutral-800"
-                    >
+                    <div key={idx} className="relative overflow-hidden rounded-2xl border border-neutral-800">
                       <div className="relative aspect-video w-full">
                         <iframe
                           src={emb}
