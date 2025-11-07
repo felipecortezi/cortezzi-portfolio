@@ -3,22 +3,20 @@ export function toEmbed(url?: string | null): string | null {
   try {
     const u = new URL(url);
 
+    // YouTube
+    if (u.hostname.includes("youtube")) {
+      const id = u.searchParams.get("v");
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
     if (u.hostname.includes("youtu.be")) {
       const id = u.pathname.replace("/", "");
-      return `https://www.youtube.com/embed/${id}`;
+      return id ? `https://www.youtube.com/embed/${id}` : null;
     }
-    if (u.hostname.includes("youtube.com")) {
-      const id =
-        u.searchParams.get("v") ??
-        (u.pathname.includes("/shorts/")
-          ? u.pathname.split("/shorts/")[1]
-          : "");
-      if (!id) return null;
-      return `https://www.youtube.com/embed/${id}`;
-    }
+
+    // Vimeo
     if (u.hostname.includes("vimeo.com")) {
       const id = u.pathname.replace("/", "");
-      return `https://player.vimeo.com/video/${id}`;
+      return id ? `https://player.vimeo.com/video/${id}` : null;
     }
 
     return null;
