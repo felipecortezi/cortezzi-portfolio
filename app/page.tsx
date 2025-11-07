@@ -12,14 +12,18 @@ import HeroBanner from "./components/HeroBanner";
 import Services from "./components/Services";
 import Testimonies from "./components/Testimonies";
 
+export const revalidate = 1; // força atualizar a lista de projetos com frequência
+
 export default function CortezziWireframe() {
   return (
     <>
       <Header />
       <Hero />
       <HeroBanner />
-      {/**HeroBanner */}
+
+      {/* GRID com os 6 últimos projetos do CMS */}
       <Grid />
+
       <Services />
       <About />
       <Testimonies />
