@@ -1,222 +1,121 @@
-import Image from "next/image";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import ProjectHero from "./ProjectHero";
+import Gallery from "./Gallery";
+import PT from "./PT";
 import { client } from "../../../lib/sanity.client";
 import { projectBySlugQuery } from "../../../lib/sanity.queries";
-import type { Metadata, ResolvingMetadata } from "next";
-import { notFound } from "next/navigation";
+import { toEmbed } from "./toEmbed";
 
-export const revalidate = 60;
+type Params = { slug: string };
 
-/** Converte links comuns do YouTube/Vimeo em "embed" quando possível */
-function toEmbed(url?: string | null): string | null {
-  if (!url) return null;
-  try {
-    const u = new URL(url);
-    const host = u.hostname.replace(/^www\./, "");
-
-    // YouTube
-    if (host.includes("youtube.com") || host === "youtu.be") {
-      if (host === "youtu.be") {
-        const id = u.pathname.replace("/", "");
-        return id ? `https://www.youtube.com/embed/${id}` : null;
-      }
-      const id = u.searchParams.get("v");
-      if (id) return `https://www.youtube.com/embed/${id}`;
-      const parts = u.pathname.split("/");
-      const shortId = parts.includes("shorts") ? parts.pop() : null;
-      if (shortId) return `https://www.youtube.com/embed/${shortId}`;
-    }
-
-    // Vimeo
-    if (host.includes("vimeo.com")) {
-      const id = u.pathname.split("/").filter(Boolean).pop();
-      return id ? `https://player.vimeo.com/video/${id}` : null;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-/** Metadata dinâmica por projeto */
-export async function generateMetadata(
-  { params }: { params: Promise<{ slug: string }> },
-  _parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const project: any = await client.fetch(projectBySlugQuery, { slug });
-  if (!project) return { title: "Projeto não encontrado • Cortezzi" };
-
-  const desc =
-    (Array.isArray(project.detail) &&
-      project.detail[0]?.children?.map((c: any) => c.text).join(" ").slice(0, 160)) ||
-    project.description ||
-    "Projeto do portfólio Cortezzi";
+  const data = await client.fetch(projectBySlugQuery, { slug });
 
   return {
-    title: `${project.title} • Cortezzi`,
-    description: desc,
+    title: data?.title ? `${data.title} • Cortezzi` : "Projeto • Cortezzi",
+    description: data?.description || "Projeto do portfólio Cortezzi",
     openGraph: {
-      title: project.title,
-      description: desc,
-      images: project.bannerUrl ? [{ url: project.bannerUrl }] : undefined,
+      images: data?.coverUrl ? [{ url: data.coverUrl }] : [],
     },
   };
 }
 
-/** Página do Projeto */
-export default async function ProjectPage(
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export default async function ProjectPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
   const { slug } = await params;
-  const project: any = await client.fetch(projectBySlugQuery, { slug });
-  if (!project) notFound();
+  const data = await client.fetch(projectBySlugQuery, { slug });
 
-  const {
-    title,
-    client: clientName,
-    date,
-    description,
-    detail,
-    bannerUrl,
-    thumbUrl,
-    embedUrl,
-    link,
-    galleryUrls = [],
-    videos = [],
-  } = project;
+  if (!data) {
+    // fallback elegante
+    return (
+      <>
+        <Header />
+        <main className="min-h-[50vh] flex items-center justify-center">
+          <p className="text-neutral-400">Projeto não encontrado.</p>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
-  const year = date ? new Date(date).getFullYear() : undefined;
-  const mainEmbed = embedUrl || toEmbed(link) || null;
+  // vídeo: usa primeiro de videos[]; se não tiver, usa embedUrl/link
+  const mainVideo =
+    data.videos?.[0]?.url || data.embedUrl || data.link || null;
+  const embed = toEmbed(mainVideo);
+
+  const year =
+    data?.date ? new Date(data.date).getFullYear().toString() : undefined;
 
   return (
     <>
       <Header />
+
+      {/* Capa full-bleed */}
+      <ProjectHero src={data.coverUrl} />
+
+      {/* Bloco principal */}
       <main className="bg-neutral-950">
-        {/* Banner de capa (sem fallback para thumb para evitar confusão) */}
-        {bannerUrl && (
-          <section className="relative border-b border-neutral-800 bg-neutral-900/40">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-              <div className="relative w-full overflow-hidden rounded-2xl border border-neutral-800">
-                <div className="relative aspect-[21/9] w-full">
-                  <Image
-                    src={bannerUrl}
-                    alt={title}
-                    fill
-                    priority
-                    className="object-cover"
-                  />
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+          {/* GRID: Infos (esq) / Vídeo (dir) */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+            {/* Infos */}
+            <div className="lg:col-span-3 space-y-6">
+              <div>
+                <h1 className="text-3xl font-semibold">{data.title}</h1>
+                <div className="mt-2 text-sm text-neutral-300 space-x-3">
+                  {data.client && (
+                    <span className="inline-block bg-neutral-800/70 px-2 py-1 rounded-md">
+                      {data.client}
+                    </span>
+                  )}
+                  {year && (
+                    <span className="inline-block bg-neutral-800/70 px-2 py-1 rounded-md">
+                      {year}
+                    </span>
+                  )}
                 </div>
               </div>
+
+              {data.description && (
+                <p className="text-neutral-300">{data.description}</p>
+              )}
+
+              {/* descrição longa (Portable Text) */}
+              {data.longDescription && <PT value={data.longDescription} />}
             </div>
-          </section>
-        )}
 
-        {/* Cabeçalho */}
-        <section className="border-b border-neutral-800">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-            <div className="flex flex-col gap-3">
-              <h1 className="text-3xl font-semibold">{title}</h1>
-              <div className="text-neutral-300">
-                {clientName && <span className="mr-3">Cliente: {clientName}</span>}
-                {year && <span>• {year}</span>}
-              </div>
-
-              {/* descrição curta */}
-              {description && (
-                <p className="text-neutral-300 max-w-3xl">{description}</p>
+            {/* Vídeo principal */}
+            <div className="lg:col-span-2">
+              {embed ? (
+                <div className="aspect-video w-full overflow-hidden rounded-2xl border border-neutral-800 bg-black">
+                  <iframe
+                    src={embed}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <div className="aspect-video w-full rounded-2xl border border-neutral-800 bg-neutral-900/40 flex items-center justify-center text-neutral-400">
+                  Vídeo em breve
+                </div>
               )}
             </div>
           </div>
+
+          {/* Galeria (se houver) */}
+          {data.gallery?.length ? <Gallery items={data.gallery} /> : null}
         </section>
-
-        {/* Vídeo principal */}
-        {mainEmbed && (
-          <section className="border-b border-neutral-800 bg-neutral-900/40">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-              <div className="relative w-full overflow-hidden rounded-2xl border border-neutral-800">
-                <div className="relative aspect-video w-full">
-                  <iframe
-                    src={mainEmbed}
-                    className="absolute inset-0 h-full w-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    title={title}
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Descrição detalhada (Portable Text simples) */}
-        {Array.isArray(detail) && detail.length > 0 && (
-          <section className="border-b border-neutral-800">
-            <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 prose prose-invert">
-              {detail.map((block: any, i: number) =>
-                block._type === "block" ? (
-                  <p key={i}>{(block.children || []).map((c: any) => c?.text).join("")}</p>
-                ) : null
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Galeria */}
-        {Array.isArray(galleryUrls) && galleryUrls.length > 0 && (
-          <section className="border-b border-neutral-800 bg-neutral-900/40">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-              <h2 className="text-xl font-semibold mb-6">Galeria</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {galleryUrls.map((url: string, idx: number) => (
-                  <div key={idx} className="relative overflow-hidden rounded-xl border border-neutral-800">
-                    <div className="relative aspect-[4/3] w-full">
-                      <Image
-                        src={url}
-                        alt={`${title} - imagem ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Demais vídeos com orientação */}
-        {Array.isArray(videos) && videos.length > 0 && (
-          <section className="border-b border-neutral-800">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-              <h2 className="text-xl font-semibold mb-6">Vídeos</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {videos.map((v: any, idx: number) => {
-                  const emb = v?.embedUrl || toEmbed(v?.url);
-                  if (!emb) return null;
-                  const aspect =
-                    v?.orientation === "vertical" ? "aspect-[9/16]" : "aspect-video";
-                  return (
-                    <div key={idx} className="relative overflow-hidden rounded-2xl border border-neutral-800">
-                      <div className={`relative ${aspect} w-full`}>
-                        <iframe
-                          src={emb}
-                          className="absolute inset-0 h-full w-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          allowFullScreen
-                          title={`${title} – vídeo ${idx + 1}`}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
       </main>
+
       <Footer />
     </>
   );
 }
+
+export const revalidate = 60;
