@@ -49,7 +49,7 @@ export const featuredProjectQuery = `
 }
 `;
 
-// Detalhe: projeto por slug (agora com cover, details, gallery e videos)
+// lib/sanity.queries.ts
 export const projectBySlugQuery = `
 *[_type=="project" && slug.current == $slug][0]{
   _id,
@@ -57,17 +57,24 @@ export const projectBySlugQuery = `
   "slug": slug.current,
   client,
   date,
-  description,
-  detail,
-  "thumbUrl": thumb.asset->url,
-  "bannerUrl": banner.asset->url,
-  "galleryUrls": gallery[].asset->url,
-  videos[]{
-    url,
-    embedUrl,
-    orientation
-  },
+  description,           // curta
+  longDescription,       // rica (Portable Text), se você chamou diferente, atualize o nome
   link,
-  embedUrl
+  embedUrl,
+  // imagens
+  "coverUrl": coalesce(cover.asset->url, thumb.asset->url), // capa larga (fallback = thumb)
+  "thumbUrl": thumb.asset->url,
+  // galeria
+  gallery[]{
+    _key,
+    "url": asset->url,
+    alt
+  },
+  // vídeos: array de {url, orientation}
+  videos[]{
+    _key,
+    url,
+    orientation
+  }
 }
 `;
