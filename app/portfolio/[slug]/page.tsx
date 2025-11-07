@@ -26,8 +26,12 @@ function toEmbed(url?: string | null): string | null {
   return null;
 }
 
-export default async function ProjectPage({ params }: { params: { slug: string } }) {
-  const data = await client.fetch(projectBySlugQuery, { slug: params.slug });
+export default async function ProjectPage({
+  params,
+}: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+
+  const data = await client.fetch(projectBySlugQuery, { slug });
 
   if (!data) {
     return (
