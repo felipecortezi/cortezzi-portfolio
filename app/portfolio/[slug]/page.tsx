@@ -42,6 +42,7 @@ export default async function ProjectPage({ params }: any) {
             longDescription={project?.longDescription || []}
             videos={project?.videos || []}
             embedUrl={project?.embedUrl || null}
+            link={project?.link || null}
           />
 
           {/* Galeria de fotos */}
