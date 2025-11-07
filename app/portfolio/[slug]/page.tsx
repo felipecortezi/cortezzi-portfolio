@@ -26,6 +26,14 @@ function toEmbed(url?: string | null): string | null {
   return null;
 }
 
+function aspectClass(aspect?: string) {
+  switch (aspect) {
+    case "9-16": return "aspect-[9/16]";
+    case "1-1":  return "aspect-square";
+    default:     return "aspect-video"; // 16:9
+  }
+}
+
 export default async function ProjectPage({
   params,
 }: { params: Promise<{ slug: string }> }) {
@@ -48,14 +56,27 @@ export default async function ProjectPage({
     );
   }
 
-  const { title, client: cli, date, description, thumbUrl, link, embedUrl } = data;
-  const video = embedUrl || toEmbed(link);
+  const {
+    title,
+    client: cli,
+    date,
+    description,     // curta (cards)
+    details,         // detalhada (história)
+    thumbUrl,
+    coverUrl,        // banner/faixa
+    link,
+    embedUrl,
+    gallery = [],
+    videos = [],
+  } = data;
+
+  const mainVideo = embedUrl || toEmbed(link);
 
   return (
     <>
       <Header />
       <main className="bg-neutral-950">
-        {/* Capa (usa a thumb como banner por enquanto) */}
+        {/* Banner/Capa em "faixa" (diferente da thumb) */}
         <section className="border-b border-neutral-800 bg-neutral-900/40">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
             <nav className="mb-4 text-sm text-neutral-400">
@@ -65,13 +86,18 @@ export default async function ProjectPage({
             </nav>
 
             <div className="relative w-full overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900">
-              {thumbUrl ? (
+              {coverUrl ? (
+                // faixa mais cinematográfica (21:9). Ajuste para aspect-video se preferir 16:9
+                <div className="relative w-full aspect-[21/9]">
+                  <Image src={coverUrl} alt={title} fill className="object-cover" />
+                </div>
+              ) : thumbUrl ? (
                 <div className="relative w-full aspect-video">
                   <Image src={thumbUrl} alt={title} fill className="object-cover" />
                 </div>
               ) : (
                 <div className="aspect-video grid place-items-center text-neutral-400">
-                  Sem capa — adicione uma Thumb no Admin.
+                  Sem capa — adicione **Capa (banner)** no Admin.
                 </div>
               )}
             </div>
@@ -84,26 +110,86 @@ export default async function ProjectPage({
                 {cli && date ? " • " : ""}
                 {date ? new Date(date).getFullYear() : ""}
               </p>
+
+              {/* Descrição curta opcional */}
               {description && (
-                <p className="mt-4 text-neutral-200 leading-relaxed">{description}</p>
+                <p className="mt-3 text-neutral-300">{description}</p>
+              )}
+
+              {/* Descrição detalhada */}
+              {details && (
+                <div className="prose prose-invert prose-neutral mt-6 max-w-none">
+                  <p className="leading-relaxed">{details}</p>
+                </div>
               )}
             </header>
           </div>
         </section>
 
-        {/* Vídeo principal (se houver) */}
-        {video && (
+        {/* Vídeo principal (se quiser manter um destaque de vídeo) */}
+        {mainVideo && (
           <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
             <div className="relative w-full overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 aspect-video">
               <iframe
                 className="h-full w-full"
-                src={video}
+                src={mainVideo}
                 title={title}
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
+            </div>
+          </section>
+        )}
+
+        {/* Galeria de imagens/frames */}
+        {gallery.length > 0 && (
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+            <h2 className="text-xl font-semibold mb-4">Galeria</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {gallery.map((g: any, i: number) => (
+                <div
+                  key={i}
+                  className="relative w-full overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 aspect-[4/3]"
+                >
+                  <Image src={g.url} alt={`Frame ${i + 1}`} fill className="object-cover" />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Vários vídeos (com proporções configuráveis) */}
+        {videos.length > 0 && (
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+            <h2 className="text-xl font-semibold mb-4">Vídeos</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {videos.map((v: any, i: number) => {
+                const src = v.embedUrl || toEmbed(v.link);
+                return (
+                  <div
+                    key={i}
+                    className={`relative w-full overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 ${aspectClass(v.aspect)}`}
+                  >
+                    {src ? (
+                      <iframe
+                        className="h-full w-full"
+                        src={src}
+                        title={v.title || `Vídeo ${i + 1}`}
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <div className="grid place-items-center h-full text-neutral-400 p-6 text-center">
+                        Adicione o **Link** ou **Embed URL** deste vídeo no Admin.
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}
