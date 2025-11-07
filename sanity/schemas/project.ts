@@ -6,72 +6,94 @@ export default defineType({
   type: "document",
   fields: [
     defineField({ name: "title", title: "Título", type: "string", validation: r => r.required() }),
-    defineField({ name: "slug", title: "Slug", type: "slug", options: { source: "title", maxLength: 96 }, validation: r => r.required() }),
-
     defineField({ name: "client", title: "Cliente", type: "string" }),
     defineField({ name: "date", title: "Data", type: "datetime" }),
 
     defineField({ name: "description", title: "Descrição curta", type: "string" }),
+
     defineField({
-      name: "detail",
-      title: "Descrição detalhada",
+      name: "longDescription",
+      title: "Descrição longa",
       type: "array",
       of: [{ type: "block" }],
     }),
 
     defineField({
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: { source: "title", maxLength: 80 },
+      validation: r => r.required(),
+    }),
+
+    defineField({
       name: "thumb",
-      title: "Thumb (card)",
+      title: "Thumb (card da home/grade)",
       type: "image",
       options: { hotspot: true },
       validation: r => r.required(),
     }),
 
     defineField({
-      name: "banner",
-      title: "Banner da página (capa/faixa)",
+      name: "cover",
+      title: "Capa do projeto (banner da página)",
       type: "image",
       options: { hotspot: true },
     }),
 
-    defineField({
-      name: "gallery",
-      title: "Galeria de imagens",
-      type: "array",
-      of: [{ type: "image", options: { hotspot: true } }],
-    }),
+    defineField({ name: "featured", title: "Destaque em /portfolio", type: "boolean" }),
 
+    // Link/Embed legado (continua funcionando se slug vazio)
+    defineField({ name: "link", title: "Link externo (YouTube/Vimeo/site)", type: "url" }),
+    defineField({ name: "embedUrl", title: "Embed URL (se usar um único vídeo)", type: "url" }),
+
+    // Múltiplos vídeos
     defineField({
       name: "videos",
-      title: "Vídeos do projeto",
+      title: "Vídeos",
       type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            { name: "url", title: "URL (YouTube/Vimeo)", type: "url" },
-            { name: "embedUrl", title: "Embed URL (opcional)", type: "url" },
-            {
-              name: "orientation",
-              title: "Orientação",
-              type: "string",
-              options: {
-                list: [
-                  { title: "Horizontal (16:9)", value: "horizontal" },
-                  { title: "Vertical (9:16)", value: "vertical" },
-                ],
-                layout: "radio",
-              },
-              initialValue: "horizontal",
-            },
-          ],
-        },
-      ],
+      of: [{
+        type: "object",
+        fields: [
+          { name: "url", title: "URL (YouTube/Vimeo)", type: "url", validation: r => r.required() },
+          {
+            name: "orientation",
+            title: "Orientação",
+            type: "string",
+            options: { list: [
+              { title: "Horizontal 16:9", value: "16:9" },
+              { title: "Vertical 9:16", value: "9:16" },
+            ]},
+            initialValue: "16:9"
+          },
+        ]
+      }]
     }),
 
-    defineField({ name: "featured", title: "Destaque na página /portfolio", type: "boolean" }),
-    defineField({ name: "link", title: "Link externo (YouTube/Vimeo ou site)", type: "url" }),
-    defineField({ name: "embedUrl", title: "Embed URL (principal)", type: "url" }),
+    // Galeria com proporção controlada por item
+    defineField({
+      name: "gallery",
+      title: "Galeria",
+      type: "array",
+      of: [{
+        type: "object",
+        fields: [
+          { name: "image", title: "Imagem", type: "image", options: { hotspot: true }, validation: r => r.required() },
+          {
+            name: "ratio",
+            title: "Proporção",
+            type: "string",
+            options: { list: [
+              { title: "5:4 (horizontal)", value: "5:4" },
+              { title: "4:5 (vertical)",   value: "4:5" },
+              { title: "1:1 (quadrada)",   value: "1:1" },
+              { title: "16:9 (wide)",      value: "16:9" },
+            ]},
+            initialValue: "5:4"
+          },
+        ]
+      }]
+    }),
   ],
   preview: { select: { title: "title", media: "thumb", subtitle: "client" } },
 });
