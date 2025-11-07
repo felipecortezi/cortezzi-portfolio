@@ -43,7 +43,8 @@ export default async function PortfolioPage() {
               {projects.map((p: any) => (
                 <Job
                   key={p._id}
-                  link={p.link || "#"}
+                  slug={p.slug}                 // <-- agora abre /portfolio/[slug]
+                  link={p.link || "#"}          // fallback se não tiver slug
                   title={p.title}
                   description={p.description || ""}
                   image={p.thumbUrl}
