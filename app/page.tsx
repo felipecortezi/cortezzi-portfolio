@@ -10,7 +10,7 @@ import HeroBanner from "./components/HeroBanner";
 import Services from "./components/Services";
 import Testimonies from "./components/Testimonies";
 import FraseBanner from "./components/FraseBanner";
-import GridZZ from "./components/GridZZ"; // ⬅ novo mosaico estático (portfolio-mosaic.jpg)
+import GridZZ from "./components/gridzz"; // ⬅ novo mosaico estático (portfolio-mosaic.jpg)
 
 export const revalidate = 1; // força atualizar a lista de projetos com frequência
 
