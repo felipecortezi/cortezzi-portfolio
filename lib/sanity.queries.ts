@@ -9,6 +9,7 @@ export const sixLatestProjectsQuery = `
   date,
   featured,
   link,
+  tags,
   embedUrl,
   "thumbUrl": thumb.asset->url
 }
@@ -25,6 +26,7 @@ export const allProjectsQuery = `
   date,
   featured,
   link,
+  tags,
   embedUrl,
   "thumbUrl": thumb.asset->url
 }
@@ -41,6 +43,7 @@ export const featuredProjectQuery = `
   date,
   featured,
   link,
+  tags,
   embedUrl,
   "thumbUrl": thumb.asset->url
 }
@@ -56,6 +59,7 @@ export const projectBySlugQuery = `
   client,
   date,
   link,
+  tags,
   embedUrl,
   "thumbUrl": thumb.asset->url,
   "coverUrl": cover.asset->url,
@@ -77,7 +81,7 @@ export const threeLatestExceptQuery = `
   title,
   "slug": slug.current,
   description,
+  tags,
   "thumbUrl": thumb.asset->url
 }
 `;
-
