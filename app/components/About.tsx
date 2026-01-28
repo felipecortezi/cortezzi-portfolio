@@ -27,7 +27,7 @@ export default function About() {
             <p className="mt-4 text-neutral-800 leading-relaxed font-thin">
               Movida por paixão e criatividade, a Cortezzi é um estúdio focado em vídeo que une direção,
               captação, edição e motion design para criar conteúdos sob medida. A gente acredita que imagem
-              boa não é só “bonita” — é intencional. Por isso, nosso trabalho nasce de um olhar
+              boa não é só “bonita” é intencional. Por isso, nosso trabalho nasce de um olhar
               cinematográfico, com narrativa, ritmo e acabamento premium, transformando o ordinário em algo
               que prende, comunica e permanece.
             </p>
