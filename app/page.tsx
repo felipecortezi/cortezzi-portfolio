@@ -10,16 +10,16 @@ import HeroBanner from "./components/HeroBanner";
 import Services from "./components/Services";
 import Testimonies from "./components/Testimonies";
 import FraseBanner from "./components/FraseBanner";
-import GridZZ from "./components/gridzz"; // <- IMPORT CERTO AQUI
+import GridZZ from "./components/gridzz"; 
+import Cases from "./components/Cases"; // <- ADICIONEI ESTE IMPORT
 
-export const revalidate = 1; // força atualizar a lista de projetos com frequência
+export const revalidate = 1; 
 
 export default function CortezziWireframe() {
   return (
     <>
       <Header />
       <Hero />
-      {/* faixa de vídeo do hero */}
       <HeroBanner />
 
       {/* A Cortezzi (bege) */}
@@ -30,6 +30,9 @@ export default function CortezziWireframe() {
 
       {/* Mosaico estático de cases */}
       <GridZZ />
+
+      {/* BLOCO DE CLIENTES (PNG) - Adicionado logo após o GridZZ */}
+      <Cases />
 
       {/* GRID com os 6 últimos projetos do CMS */}
       <Grid />
