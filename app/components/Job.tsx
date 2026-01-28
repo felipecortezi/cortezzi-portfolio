@@ -8,8 +8,9 @@ type Props = {
   title: string;
   description?: string;
   image: Img;
-  slug?: string | null;   // abre /portfolio/[slug] quando houver
-  link?: string;          // fallback (YouTube etc.) caso não tenha slug
+  slug?: string | null;
+  link?: string;
+  tags?: string[]; // <-- ADICIONEI ISSO AQUI PARA O ERRO SUMIR
 };
 
 export default function Job({ title, image, slug, link }: Props) {
@@ -20,7 +21,6 @@ export default function Job({ title, image, slug, link }: Props) {
       href={href}
       className="group relative block overflow-hidden rounded-[45px] aspect-square bg-neutral-200"
     >
-      {/* Container da Imagem com Zoom */}
       <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-110">
         <Image
           src={image as any}
@@ -29,11 +29,9 @@ export default function Job({ title, image, slug, link }: Props) {
           className="object-cover"
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         />
-        {/* Overlay para dar contraste aos textos brancos */}
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
       </div>
 
-      {/* Tags (Fixas conforme o design, ou você pode mapear do Sanity depois) */}
       <div className="absolute top-6 left-8 flex gap-2">
         {["Direção", "Captação", "Edição"].map((tag) => (
           <span 
@@ -45,7 +43,6 @@ export default function Job({ title, image, slug, link }: Props) {
         ))}
       </div>
 
-      {/* Informações na parte inferior */}
       <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end">
         <h3 className="text-white text-xl md:text-2xl font-medium tracking-tight">
           {title}
