@@ -1,18 +1,18 @@
 // app/components/gridzz.tsx
-
 import Image from "next/image";
 
 export default function GridZZ() {
   return (
-    <section className="w-full relative aspect-video"> 
-      {/* "aspect-video" garante a proporção 16:9 automática baseada na largura da tela */}
+    <section className="w-full">
       <Image
         src="/portfolio-mosaic.jpg"
         alt="Portfolio Mosaic"
-        fill
+        width={1920} // Largura original da sua foto
+        height={1080} // Altura original da sua foto
         priority
-        className="object-contain" 
-        /* "object-contain" garante que a imagem inteira apareça sem cortes */
+        className="w-full h-auto block" 
+        /* "w-full" garante que ela ocupe toda a largura */
+        /* "h-auto" faz a altura se ajustar proporcionalmente sem cortar */
       />
     </section>
   );
