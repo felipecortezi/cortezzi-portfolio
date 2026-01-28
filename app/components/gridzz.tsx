@@ -7,14 +7,11 @@ export default function GridZZ() {
     <section className="w-full h-[1080px] relative overflow-hidden">
       <Image
         src="/portfolio-mosaic.jpg"
-        alt="Mosaico de projetos Cortezzi"
+        alt="Portfolio Mosaic"
         fill
         priority
         className="object-cover"
       />
-      <div className="absolute bottom-6 w-full text-center text-sm tracking-[0.3em] text-white">
-        STORYTELLING • PRODUÇÃO • MOTION DESIGN
-      </div>
     </section>
   );
 }
