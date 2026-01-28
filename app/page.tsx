@@ -3,14 +3,14 @@
 import About from "./components/About";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-// import Grid from "./components/Grid"; // antigo, não usamos mais aqui
+import Grid from "./components/Grid";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import HeroBanner from "./components/HeroBanner";
 import Services from "./components/Services";
 import Testimonies from "./components/Testimonies";
 import FraseBanner from "./components/FraseBanner";
-import GridZZ from "./components/gridzz"; // ⬅ novo mosaico estático (portfolio-mosaic.jpg)
+import GridZZ from "./components/gridzz"; // <- IMPORT CERTO AQUI
 
 export const revalidate = 1; // força atualizar a lista de projetos com frequência
 
@@ -19,20 +19,21 @@ export default function CortezziWireframe() {
     <>
       <Header />
       <Hero />
-
-      {/* Faixa de vídeo do hero */}
+      {/* faixa de vídeo do hero */}
       <HeroBanner />
 
-      {/* A Cortezzi (bloco bege) */}
+      {/* A Cortezzi (bege) */}
       <About />
 
       {/* Banner azul da frase */}
       <FraseBanner />
 
-      {/* Mosaico de portfólio estático (storytelling • produção • motion design) */}
+      {/* Mosaico estático de cases */}
       <GridZZ />
 
-      {/* Blocos de serviços, depoimentos e contato */}
+      {/* GRID com os 6 últimos projetos do CMS */}
+      <Grid />
+
       <Services />
       <Testimonies />
       <Contact />
