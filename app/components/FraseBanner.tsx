@@ -18,7 +18,7 @@ export default function FraseBanner() {
           "#FFFBEF 0%, " +      // off white
           "#FFFBEF 25%, " +     // ainda claro
           "#AFC8FF 40%, " +     // começo da transição
-          "#2D6BFF 50%, " +     // já totalmente azul aqui (50%)
+          "#2D6BFF 75%, " +     // já totalmente azul aqui (50%)
           "#2D6BFF 100%)",      // azul sólido até o final
       }}
     >
