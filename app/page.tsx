@@ -19,13 +19,14 @@ export default function CortezziWireframe() {
     <>
       <Header />
       <Hero />
-      <HeroBanner />
+      <HeroBanner />   {/* faixa de vídeo do hero */}
+
+      <About />        {/* "A Cortezzi" logo após a faixa de vídeo */}
 
       {/* GRID com os 6 últimos projetos do CMS */}
       <Grid />
 
       <Services />
-      <About />
       <Testimonies />
       <Contact />
       <Footer />
