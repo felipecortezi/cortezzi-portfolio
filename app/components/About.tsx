@@ -8,7 +8,7 @@ export default function About() {
         <div className="w-full lg:w-1/2">
           <div className="rounded-[32px] bg-[#111111] overflow-hidden">
             <Image
-              src="/about-cortezzi.jpg"
+              src="/about.jpg"
               alt="Setup Cortezzi"
               width={1200}
               height={800}
