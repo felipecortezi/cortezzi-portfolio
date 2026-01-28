@@ -59,7 +59,6 @@ export default async function ProjectPage({ params }: RouteParams) {
                   key={p._id}
                   link={p?.slug ? `/portfolio/${p.slug}` : "#"}
                   title={p.title}
-                  description={p.description || ""}
                   image={p.thumbUrl}
                 />
               ))}
