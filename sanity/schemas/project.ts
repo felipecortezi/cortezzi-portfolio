@@ -11,6 +11,25 @@ export default defineType({
 
     defineField({ name: "description", title: "Descrição curta", type: "string" }),
 
+    // Novo campo de Tags com as suas opções específicas
+    defineField({
+      name: "tags",
+      title: "Tags do Projeto",
+      type: "array",
+      of: [{ type: "string" }],
+      options: {
+        list: [
+          { title: "Direção", value: "Direção" },
+          { title: "Captação", value: "Captação" },
+          { title: "Edição", value: "Edição" },
+          { title: "Color", value: "Color" },
+          { title: "Fotografia", value: "Fotografia" },
+          { title: "Motion", value: "Motion" },
+          { title: "Design", value: "Design" },
+        ]
+      }
+    }),
+
     defineField({
       name: "longDescription",
       title: "Descrição longa",
@@ -43,11 +62,9 @@ export default defineType({
 
     defineField({ name: "featured", title: "Destaque em /portfolio", type: "boolean" }),
 
-    // Link/Embed legado (continua funcionando se slug vazio)
     defineField({ name: "link", title: "Link externo (YouTube/Vimeo/site)", type: "url" }),
     defineField({ name: "embedUrl", title: "Embed URL (se usar um único vídeo)", type: "url" }),
 
-    // Múltiplos vídeos
     defineField({
       name: "videos",
       title: "Vídeos",
@@ -70,7 +87,6 @@ export default defineType({
       }]
     }),
 
-    // Galeria com proporção controlada por item
     defineField({
       name: "gallery",
       title: "Galeria",
