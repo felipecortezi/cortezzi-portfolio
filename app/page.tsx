@@ -1,6 +1,4 @@
 // Cortezzi Creative – Visual Wireframe (React + Tailwind)
-// Observação: é um layout-base para referência visual (proporções, hierarquia e ritmo).
-// Substitua textos e placeholders no Figma depois.
 
 import About from "./components/About";
 import Contact from "./components/Contact";
@@ -11,6 +9,7 @@ import Hero from "./components/Hero";
 import HeroBanner from "./components/HeroBanner";
 import Services from "./components/Services";
 import Testimonies from "./components/Testimonies";
+import FraseBanner from "./components/FraseBanner";
 
 export const revalidate = 1; // força atualizar a lista de projetos com frequência
 
@@ -19,9 +18,14 @@ export default function CortezziWireframe() {
     <>
       <Header />
       <Hero />
-      <HeroBanner />   {/* faixa de vídeo do hero */}
+      {/* faixa de vídeo do hero */}
+      <HeroBanner />
 
-      <About />        {/* "A Cortezzi" logo após a faixa de vídeo */}
+      {/* A Cortezzi (bege) */}
+      <About />
+
+      {/* Banner azul da frase */}
+      <FraseBanner />
 
       {/* GRID com os 6 últimos projetos do CMS */}
       <Grid />
