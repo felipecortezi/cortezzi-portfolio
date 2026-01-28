@@ -1,4 +1,3 @@
-// app/components/About.tsx
 import Image from "next/image";
 
 export default function About() {
@@ -6,33 +5,32 @@ export default function About() {
     <section id="sobre" className="bg-[#FFFBEF]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
         <div className="grid gap-10 lg:gap-16 md:grid-cols-2 items-center">
-          {/* Imagem um pouco mais vertical */}
-          <div className="relative w-full aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-neutral-300 shadow-sm">
+          {/* Imagem levemente vertical (quase quadrada) */}
+          <div className="relative w-full aspect-[5/6] overflow-hidden rounded-2xl ring-1 ring-neutral-300 shadow-sm">
             <Image
               src="/about.jpg"
               alt="Estúdio Cortezzi"
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
-              priority={false}
             />
           </div>
 
-          {/* Texto em fundo claro */}
+          {/* Texto */}
           <div>
-            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-900">
+            <h2 className="text-4xl sm:text-5xl font-semibold tracking-tight text-neutral-900">
               A Cortezzi
             </h2>
 
-            <p className="mt-4 text-neutral-800 leading-relaxed font-thin">
+            <p className="mt-5 text-[17px] sm:text-lg leading-relaxed text-neutral-800 text-justify font-thin">
               Movida por paixão e criatividade, a Cortezzi é um estúdio focado em vídeo que une direção,
               captação, edição e motion design para criar conteúdos sob medida. A gente acredita que imagem
-              boa não é só “bonita” é intencional. Por isso, nosso trabalho nasce de um olhar
+              boa não é só “bonita” — é intencional. Por isso, nosso trabalho nasce de um olhar
               cinematográfico, com narrativa, ritmo e acabamento premium, transformando o ordinário em algo
               que prende, comunica e permanece.
             </p>
 
-            <p className="mt-4 text-neutral-800 leading-relaxed font-thin">
+            <p className="mt-4 text-[17px] sm:text-lg leading-relaxed text-neutral-800 text-justify font-thin">
               Para nós, cada projeto começa no essencial: um espaço em branco cheio de possibilidades.
               É ali que as ideias ganham forma, crescem e viram história com identidade, consistência e
               cuidado em cada detalhe, do primeiro frame à entrega final. Nosso estilo visual caminha entre
