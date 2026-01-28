@@ -6,20 +6,23 @@ type Img = StaticImageData | string;
 
 type Props = {
   title: string;
-  description?: string;
   image: Img;
   slug?: string | null;
   link?: string;
-  tags?: string[]; // <-- ADICIONEI ISSO AQUI PARA O ERRO SUMIR
+  tags?: string[]; // Agora o componente aceita as tags que vêm do Admin
 };
 
-export default function Job({ title, image, slug, link }: Props) {
+export default function Job({ title, image, slug, link, tags }: Props) {
   const href = slug ? `/portfolio/${slug}` : (link || "#");
+
+  // Se não houver tags no Sanity, podemos definir tags padrão ou deixar vazio []
+  const displayTags = tags && tags.length > 0 ? tags : ["Direção", "Captação", "Edição"];
 
   return (
     <Link
       href={href}
-      className="group relative block overflow-hidden rounded-[45px] aspect-square bg-neutral-200"
+      className="group relative block overflow-hidden rounded-[25px] aspect-square bg-neutral-200" 
+      /* Reduzi de 45px para 25px para uma borda mais suave */
     >
       <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-110">
         <Image
@@ -32,24 +35,27 @@ export default function Job({ title, image, slug, link }: Props) {
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
       </div>
 
-      <div className="absolute top-6 left-8 flex gap-2">
-        {["Direção", "Captação", "Edição"].map((tag) => (
+      {/* Tags Dinâmicas */}
+      <div className="absolute top-5 left-6 flex flex-wrap gap-2">
+        {displayTags.map((tag) => (
           <span 
             key={tag} 
-            className="bg-black/20 backdrop-blur-md text-white text-[10px] px-4 py-1.5 rounded-full uppercase tracking-widest font-light border border-white/10"
+            className="bg-black/30 backdrop-blur-md text-white text-[9px] px-3 py-1 rounded-full uppercase tracking-widest font-light border border-white/10"
           >
             {tag}
           </span>
         ))}
       </div>
 
-      <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end">
-        <h3 className="text-white text-xl md:text-2xl font-medium tracking-tight">
+      {/* Rodapé do Card */}
+      <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center">
+        <h3 className="text-white text-lg md:text-xl font-medium tracking-tight truncate mr-2">
           {title}
         </h3>
         
-        <span className="text-white text-[10px] border border-white/40 rounded-full px-5 py-2 uppercase tracking-widest backdrop-blur-sm group-hover:bg-white group-hover:text-black transition-all duration-300">
-          Ver mais +
+        {/* Botão mais fino e em uma linha só */}
+        <span className="text-white text-[9px] border border-white/40 rounded-full px-4 py-1.5 uppercase tracking-widest whitespace-nowrap backdrop-blur-sm group-hover:bg-white group-hover:text-black transition-all duration-300">
+          ver mais +
         </span>
       </div>
     </Link>
