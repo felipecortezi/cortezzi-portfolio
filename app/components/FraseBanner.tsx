@@ -9,7 +9,7 @@ export default function FraseBanner() {
       style={{
         // Degradê mais suave e azul chegando mais cedo
         backgroundImage:
-          "linear-gradient(to bottom, #FFFBEF 0%, #FFFBEF 25%, #F0F4FF 50%, #2D6BFF 80%, #2D6BFF 100%)",
+          "linear-gradient(to bottom, #FFFBEF 0%, #FFFBEF 10%, #F0F4FF 20%, #2D6BFF 35%, #2D6BFF 100%)",
       }}
     >
       <div className="relative w-full max-w-5xl px-6">
@@ -17,7 +17,7 @@ export default function FraseBanner() {
           src="/frase.svg"
           alt="A Cortezzi transforma o ordinário em cinematográfico"
           width={1920}
-          height={600}
+          height={1080}
           className="mx-auto w-full h-auto object-contain"
           priority
         />
