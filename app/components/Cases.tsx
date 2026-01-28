@@ -5,8 +5,8 @@ export default function Cases() {
   return (
     <section className="w-full bg-[#F9F7F0] py-20 md:py-32 px-6 flex flex-col items-center">
       
-      {/* Título - SF Pro Semibold */}
-      <h2 className="text-4xl md:text-5xl font-semibold text-[#1A1A1A] mb-2 tracking-tighter uppercase">
+      {/* Título - SF Pro Semibold em minúsculo */}
+      <h2 className="text-4xl md:text-5xl font-semibold text-[#1A1A1A] mb-2 tracking-tighter lowercase">
         cases
       </h2>
       
@@ -15,11 +15,11 @@ export default function Cases() {
         Quem confia na Cortezzi©
       </p>
 
-      {/* Container das Logos - Aqui controlamos o tamanho e respiro lateral */}
+      {/* Container das Logos - Ajustado para não ficar gigante */}
       <div className="w-full max-w-4xl opacity-80">
         <Image
           src="/Clientes.png"
-          alt="Nossos Clientes"
+          alt="nossos clientes"
           width={1200}
           height={600}
           className="w-full h-auto object-contain"
