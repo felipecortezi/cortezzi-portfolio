@@ -7,9 +7,10 @@ export default function FraseBanner() {
     <section
       className="w-full flex items-center justify-center"
       style={{
-        minHeight: "70vh", // altura bacana tipo sua tela 3
+        minHeight: "70vh",
+        // Degradê ajustado: já está azul perto do meio
         backgroundImage:
-          "linear-gradient(to bottom, #FFFBEF 0%, #FFFBEF 45%, #2D6BFF 100%)",
+          "linear-gradient(to bottom, #FFFBEF 0%, #FFFBEF 25%, #2D6BFF 55%, #2D6BFF 100%)",
       }}
     >
       <div className="relative w-full max-w-4xl px-6">
