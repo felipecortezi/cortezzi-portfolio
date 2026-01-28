@@ -8,18 +8,18 @@ export default async function Grid() {
 
   return (
     <section id="portfolio" className="bg-[#F9F7F0] py-24 md:py-40">
-      {/* 1. Container expandido para max-w-[1600px] para encher mais a tela */}
+      {/* 1. Mantive o container amplo para os projetos brilharem */}
       <div className="mx-auto max-w-[1600px] px-6">
         
-        {/* 2. Título com MUITO mais distância (mb-32) e maior (text-7xl/8xl) */}
-        <div className="text-center mb-24 md:mb-36">
-          <h2 className="text-6xl md:text-8xl font-bold text-[#1A1A1A] tracking-tighter lowercase">
+        {/* 2. Título reduzido pela metade e com espaçamento refinado */}
+        <div className="text-center mb-20 md:mb-28">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] tracking-tighter lowercase">
             projetos recentes
           </h2>
         </div>
 
         {projects?.length ? (
-          /* 3. Grid com gap maior para acompanhar a escala maior das imagens */
+          /* 3. Grid preenchendo bem a tela */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-14">
             {projects.map((p: any) => (
               <Job
@@ -33,14 +33,14 @@ export default async function Grid() {
             ))}
           </div>
         ) : (
-          <p className="text-center text-gray-400">Em breve, novos projetos aqui.</p>
+          <p className="text-center text-gray-400 font-light">Em breve, novos projetos aqui.</p>
         )}
 
-        {/* Botão de Ver Mais com mais respiro */}
+        {/* Botão de Ver Mais */}
         <div className="mt-24 md:mt-32 flex justify-center">
           <a
             href="/portfolio"
-            className="px-12 py-5 border border-gray-300 rounded-full text-gray-500 text-lg font-light hover:bg-[#1A1A1A] hover:border-[#1A1A1A] hover:text-white transition-all duration-500"
+            className="px-10 py-4 border border-gray-300 rounded-full text-gray-500 text-base font-light hover:bg-[#1A1A1A] hover:border-[#1A1A1A] hover:text-white transition-all duration-500"
           >
             Clique aqui para ver mais projetos.
           </a>
