@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="relative h-[78vh] min-h-[520px] w-full overflow-hidden bg-neutral-950">
+    <section className="relative h-[92vh] min-h-[620px] w-full overflow-hidden">
       {/* BG image */}
       <Image
         src="/hero.jpg"
@@ -13,15 +13,12 @@ export default function Hero() {
         className="object-cover"
       />
 
-      {/* overlay leve */}
-      <div className="absolute inset-0 bg-black/45" />
-
-      {/* texto centralizado */}
-      <div className="relative z-10 h-full w-full flex items-center justify-center">
+      {/* texto centralizado, levemente acima do centro */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[18%] z-10">
         <h1
           className="
             flex items-baseline gap-6
-            text-white text-4xl md:text-5xl lg:text-6xl
+            text-white text-2xl md:text-3xl lg:text-4xl
             font-normal leading-tight text-center
           "
         >
