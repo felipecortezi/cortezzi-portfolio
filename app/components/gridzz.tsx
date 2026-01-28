@@ -1,4 +1,4 @@
-// app/components/gridzz.tsx ou GridZZ.tsx
+// app/components/gridzz.tsx
 import Image from "next/image";
 
 export default function GridZZ() {
