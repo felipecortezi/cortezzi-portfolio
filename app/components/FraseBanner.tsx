@@ -5,29 +5,22 @@ import Image from "next/image";
 export default function FraseBanner() {
   return (
     <section
-      className="w-full py-24 md:py-28 lg:py-32"
+      className="w-full flex items-center justify-center"
       style={{
-        // gradiente: começa em #FFFBEF e termina em #2D6BFF
+        minHeight: "70vh", // altura bacana tipo sua tela 3
         backgroundImage:
           "linear-gradient(to bottom, #FFFBEF 0%, #FFFBEF 45%, #2D6BFF 100%)",
       }}
     >
-      <div className="max-w-5xl mx-auto px-6 flex flex-col items-center text-center gap-8">
-        {/* SVG da frase */}
-        <div className="relative w-full max-w-3xl aspect-[16/4]">
-          <Image
-            src="/frase.svg"
-            alt="A Cortezzi transforma o ordinário em cinematográfico."
-            fill
-            className="object-contain"
-            priority
-          />
-        </div>
-
-        {/* Subfrase */}
-        <p className="text-sm md:text-base text-[#E0ECFF] font-[300]">
-          Somos a sua produtora audiovisual!
-        </p>
+      <div className="relative w-full max-w-4xl px-6">
+        <Image
+          src="/frase.svg"
+          alt="A Cortezzi transforma o ordinário em cinematográfico"
+          width={1600}
+          height={600}
+          className="mx-auto object-contain"
+          priority
+        />
       </div>
     </section>
   );
