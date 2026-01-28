@@ -5,11 +5,21 @@ import Image from "next/image";
 export default function FraseBanner() {
   return (
     <section
-      className="w-full flex items-center justify-center py-20 md:py-28"
+      className="
+        w-full
+        flex items-center justify-center
+        min-h-[680px] md:min-h-[860px]   /* altura bem próxima de 1080 no desktop */
+        py-16 md:py-24                   /* respiro em cima e embaixo da frase */
+      "
       style={{
-        // Degradê mais suave e azul chegando mais cedo
         backgroundImage:
-          "linear-gradient(to bottom, #FFFBEF 0%, #FFFBEF 10%, #F0F4FF 20%, #2D6BFF 35%, #2D6BFF 100%)",
+          // 0–25% off-white, 25–50% transição, 50–100% azul sólido
+          "linear-gradient(to bottom, " +
+          "#FFFBEF 0%, " +      // off white
+          "#FFFBEF 25%, " +     // ainda claro
+          "#AFC8FF 40%, " +     // começo da transição
+          "#2D6BFF 50%, " +     // já totalmente azul aqui (50%)
+          "#2D6BFF 100%)",      // azul sólido até o final
       }}
     >
       <div className="relative w-full max-w-5xl px-6">
